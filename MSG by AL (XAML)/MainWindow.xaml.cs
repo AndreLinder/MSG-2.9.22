@@ -39,6 +39,7 @@ namespace MSG_by_AL__XAML_
         //Авторизация пользователя
         private void Login_Click(object sender, RoutedEventArgs e)
         {
+            
             List<string> values = ServerConnect.RecieveDataFromDB("01#", login_txt.Text + "~" + password_txt.Password);
             if (values[0] != "ERROR")
             {

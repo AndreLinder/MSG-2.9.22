@@ -171,7 +171,7 @@ namespace MSG_by_AL__XAML_
             }
         }
 
-        //Отметка сообщений прочитанными
+        //Отметка сообщений прочитанными (по идее не нужен уже)
         public void Mark_Read()
         {
             try
@@ -297,56 +297,33 @@ namespace MSG_by_AL__XAML_
         }
 
         //Запуск асинхронной операции обновления текущего диалога
-        public async void Refresh_Chat_Async()
+        public void Refresh_Chat_Async()
         {
             while (IDFriend != -1)
             {
-                //Проверка на наличие непрочитанных сообщений
-                bool unreadMessage = false;
                 try
                 {
-                    //Открываем соединение
-                    await connection_async.OpenAsync();
-                    //Строка запроса
-                    string sql_cmd = "SELECT * FROM server_chats.messages WHERE (ID_Reciever = @MYID AND ID_Sender = @FRIENDID AND Visible_Message = 0);";
-
-                    //Команда запроса
-                    MySqlCommand cmd = connection_async.CreateCommand();
-                    cmd.CommandText = sql_cmd;
-
-                    //Добавляем параметры запроса
-                    MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                    myID.Value = IDuser;
-                    cmd.Parameters.Add(myID);
-
-                    MySqlParameter friendID = new MySqlParameter("@FRIENDID", MySqlDbType.Int32);
-                    friendID.Value = IDFriend;
-                    cmd.Parameters.Add(friendID);
-
-                    //Проверяем в БД непрочитанные нами сообщения
-                    using (DbDataReader reader = await cmd.ExecuteReaderAsync())
+                    List<List<string>> values = ServerConnect.RecieveBigDataFromDB("06#",IDuser + "~" + IDFriend);
+                    foreach(List<string> value in values)
                     {
-                        if (reader.HasRows)
+
+                        if (value[0] != "ERROR")
                         {
-                            while (reader.Read())
-                            {
-                                Message friend_message = new Message();
-                                friend_message.Message_ID = int.Parse(reader.GetString(0));
-                                friend_message.Message_Text = reader.GetString(1);
-                                friend_message.Message_Date = reader.GetString(2);
-                                friend_message.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
-                                friend_message.borderBrush = (Brush)Application.Current.Resources["FriendMessageColor"];
-                                //Выполняет указанный делегат в оснвном потоке (т.к. к Control'у я не могу обратиться из этого потока)
-                                Dispatcher.Invoke(() => Message_List.Items.Add(friend_message));
-                                //Если непрочитанные сообщения есть, то нужно отметить их прочитанными
-                                unreadMessage = true;
-                            }
-                            Dispatcher.Invoke(()=>Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count-1]));
+                            Message friend_message = new Message();
+                            friend_message.Message_ID = int.Parse(value[0]);
+                            friend_message.Message_Text = value[1];
+                            friend_message.Message_Date = value[2];
+                            friend_message.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
+                            friend_message.borderBrush = (Brush)Application.Current.Resources["FriendMessageColor"];
+                            //Выполняет указанный делегат в оснвном потоке (т.к. к Control'у я не могу обратиться из этого потока)
+                            Dispatcher.Invoke(()=>Message_List.Items.Add(friend_message));
+                            //Если непрочитанные сообщения есть, то нужно отметить их прочитанными
+                            ServerConnect.RecieveBigDataFromDB("07#", IDuser + "~" + IDFriend);
                         }
+                        Dispatcher.Invoke(()=>Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]));
+                        
                     }
-                    //В зависимости от того, есть ли сообщения непрочитанные
-                    //Выполняем функцию отметки сообщений
-                    if (unreadMessage) Mark_Read();
+
                 }
                 catch (Exception ex)
                 {
@@ -354,12 +331,11 @@ namespace MSG_by_AL__XAML_
                 }
                 finally
                 {
-                    //Закрываем соединение
-                    await connection_async.CloseAsync();
+                   
                 }
 
                 //Приостанавливаем поток данной функции (снижает нагрузку на БД, ОЗУ, ЦП + 1,5 сек. не страшная задержка)
-                System.Threading.Thread.Sleep(1500);
+                System.Threading.Thread.Sleep(5000);
             }
         }
 
@@ -425,37 +401,35 @@ namespace MSG_by_AL__XAML_
                     Dispatcher.Invoke(()=>Close_Dialog.Visibility = Visibility.Visible);
                     Dispatcher.Invoke(()=>MySlider.Visibility = Visibility.Visible);
                     Dispatcher.Invoke(()=>Name_Friend.Visibility = Visibility.Visible);
-                    Dispatcher.Invoke(() => Name_Friend.Content = GetChatName(friend_ID));
-                    //Открываем соединение
-                    connection.Open();
 
-                    //Строка запроса на определения количества сообщений в диалоге
-                    string sql_cmd = "SELECT COUNT(*) FROM server_chats.messages WHERE (ID_Sender = @MYID AND ID_Reciever = @IDFRIEND) OR (ID_Sender = @IDFRIEND AND ID_Reciever = @MYID);";
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("05#",IDuser + "~" + IDFriend);
 
-                    //Команда запроса
-                    MySqlCommand cmd = connection.CreateCommand();
-                    cmd.CommandText = sql_cmd;
-
-                    //Параметры запроса
-                    MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                    myID.Value = IDuser;
-                    cmd.Parameters.Add(myID);
-
-                    MySqlParameter friendID = new MySqlParameter("@IDFRIEND", MySqlDbType.Int32);
-                    friendID.Value = IDFriend;
-                    cmd.Parameters.Add(friendID);
-
-                    //Получаем количество сообщений в диалоге
-                    using (DbDataReader reader = cmd.ExecuteReader())
+                foreach(List<string> value in values)
+                {
+                    if (int.Parse(value[3]) == IDuser)
                     {
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                MessageCount = int.Parse(reader.GetString(0));
-                            }
-                        }
+                        //Создадим объект привязки данных и определим свойства
+                        Message MSG = new Message();
+                        MSG.Message_ID = int.Parse(value[0]);
+                        MSG.Message_Text = value[1];
+                        MSG.Message_Date = value[2];
+                        MSG.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
+                        MSG.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
+                        Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
                     }
+                    if (int.Parse(value[3]) == IDFriend)
+                    {
+                        Message MSG = new Message();
+                        MSG.Message_ID = int.Parse(value[0]);
+                        MSG.Message_Text = value[1];
+                        MSG.Message_Date = value[2];
+                        MSG.borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
+                        MSG.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
+                        Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
+                    }
+                }
+
+
             }
             catch (Exception ex)
             {
@@ -463,13 +437,6 @@ namespace MSG_by_AL__XAML_
             }
             finally
             {
-                //Закрываем соединение
-                connection.Close();
-
-                //Вызываем функцию загрузки сообщений
-                if (MessageCount <= 100) Dispatcher.Invoke(()=>Loading_Messages("SELECT * FROM server_chats.messages WHERE (ID_Sender = @MYID AND ID_Reciever = @IDFRIEND) OR (ID_Sender = @IDFRIEND AND ID_Reciever = @MYID)"));
-                else Dispatcher.Invoke(()=>Loading_Messages("SELECT * FROM server_chats.messages WHERE (ID_Sender = @MYID AND ID_Reciever = @IDFRIEND) OR (ID_Sender = @IDFRIEND AND ID_Reciever = @MYID) LIMIT @COUNT-100,@COUNT;"));
-
                 await Task.Run(() => Refresh_Chat_Async());
             }
         }

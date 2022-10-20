@@ -45,7 +45,8 @@
                HorizontalAlignment="Center"
                VerticalAlignment="Top"
                Grid.Row="0"
-               GotFocus="UIElement_LostFocus"/>
+               GotFocus="UIElement_LostFocus"
+               Visibility="Hidden"/>
 
         <!--Поле для ввода логина-->
         <TextBox x:Name="login_txt" 

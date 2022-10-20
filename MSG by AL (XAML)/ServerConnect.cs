@@ -12,7 +12,7 @@ namespace MSG_by_AL__XAML_
     {
         //Адрес и порт для подключения к серверу
         static int port = 8005;
-        static IPAddress IP = Dns.GetHostAddresses("andrelinder.ddns.net")[0];
+        static IPAddress IP = IPAddress.Parse("77.50.200.145");/*Dns.GetHostAddresses("andrelinder.ddns.net")[0]*/
 
         //Пустой конструктор класса
         public ServerConnect()
@@ -33,6 +33,7 @@ namespace MSG_by_AL__XAML_
 
                 //Определяем объект сокета, для подключения к серверу по удаленной конечной точке
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+
 
                 //Подключаемся к удаленному хосту
                 socket.Connect(ipPoint);
@@ -104,6 +105,10 @@ namespace MSG_by_AL__XAML_
                 }
                 while (socket.Available > 0);
 
+                // закрываем сокет
+                socket.Shutdown(SocketShutdown.Both);
+                socket.Close();
+
                 /*Получаем данные от сервера в виде строки: value1~value2~...valueN~ 
                  Обрабатываем данную строку, чтобы разделить значения и добавить их в список*/
                 string msg = builder.ToString();
@@ -119,10 +124,6 @@ namespace MSG_by_AL__XAML_
                     }
                     values.Add(list);
                 }
-
-                // закрываем сокет
-                socket.Shutdown(SocketShutdown.Both);
-                socket.Close();
             }
             catch (Exception ex)
             {
