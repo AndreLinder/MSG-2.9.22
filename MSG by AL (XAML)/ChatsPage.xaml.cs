@@ -16,6 +16,9 @@ using System.Threading;
 using MySql.Data.MySqlClient;
 using ConnectionDB;
 using MSG_by_AL__XAML_.Resource;
+using System.IO;
+using System.Net.Sockets;
+using System.Net;
 
 namespace MSG_by_AL__XAML_
 {
@@ -40,16 +43,17 @@ namespace MSG_by_AL__XAML_
 
         //Создание объекта подключения к БД
         MySqlConnection connection = DBUtils.GetDBConnection();
-        MySqlConnection connection_async = DBUtils.GetDBConnection();
 
-        public ChatsPage(int ID)
+        public ChatsPage(int ID, string nick)
         {
             IDuser = ID;
+            NickName = nick;
             InitializeComponent();
             Clear_List();
             Update_Dialog_List();
             Update_Friend_List();
-            Task.Run(() => Search_Unread_Messages());
+            //Task.Run(() => Search_Unread_Messages_Async());
+            Task.Run(() => Recieve_Notification());
         }
 
         //Очистка всех списков (сообщений, чатов, пользователей)
@@ -60,6 +64,39 @@ namespace MSG_by_AL__XAML_
             Chat_list.Items.Clear();
         }
 
+        //Работа с уведомлениями через Демона
+        public async void Recieve_Notification()
+        {
+            while(IDuser > 0)
+            {
+                try
+                {
+                    List<List<string>>  list_notification = ServerConnect.RecieveNotification(IDuser);
+                    Dispatcher.Invoke(()=>Demon_Connect.Text = "Demon connected");
+                    if (list_notification[0][0] != "NONE")
+                    {
+
+                        foreach (List<string> value in list_notification)
+                        {
+
+                            Dispatcher.Invoke(() => User_Name_Notification.Text = value[0]);
+                            Dispatcher.Invoke(() => Text_Message_Notification.Text = value[1]);
+                            Dispatcher.Invoke(() => SideNotificationShow());
+                            System.Threading.Thread.Sleep(4000);
+                            Dispatcher.Invoke(() => SideNotificationShow());
+                            System.Threading.Thread.Sleep(1500);
+                        }
+                        list_notification.Clear();
+                    }
+                    System.Threading.Thread.Sleep(4000);
+                }
+                catch (Exception ex)
+                {
+                    Dispatcher.Invoke(()=>Demon_Connect.Text = "Demon disconnected");
+                }
+            }
+        }
+
         //Метод обновления списка чатов(#03)
         public void Update_Dialog_List()
         {
@@ -67,7 +104,7 @@ namespace MSG_by_AL__XAML_
             Chat_list.Items.Clear();
 
             //Получаем список чатов от сервера в виде "Списка списков строк"
-            List<List<string>> values = ServerConnect.RecieveBigDataFromDB("03#", IDuser + "~");
+            List<List<string>> values = ServerConnect.RecieveBigDataFromDB("03#", IDuser.ToString());
 
             foreach(List<string> value in values)
             {
@@ -86,18 +123,22 @@ namespace MSG_by_AL__XAML_
             Friend_List.Items.Clear();
 
             //Делаем запрос на сервер и получаем список друзей
-            List<List<string>> values = ServerConnect.RecieveBigDataFromDB("04#", IDuser + "");
+            List<List<string>> values = ServerConnect.RecieveBigDataFromDB("04#", IDuser + "~");
 
-            foreach(List<string> value in values)
+            if (values[0][0] != "ERROR")
             {
-                Chat_List user = new Chat_List();
-                user.ID_Friend = int.Parse(value[0]);
-                user.Name = value[1];
-                Friend_List.Items.Add(user);
+                foreach (List<string> value in values)
+                {
+                    Chat_List user = new Chat_List();
+                    user.ID_Friend = int.Parse(value[0]);
+                    user.Name = value[1];
+                    user.Nickname = value[2];
+                    Friend_List.Items.Add(user);
+                }
             }
         }
 
-        //Выгрузка сообщений
+        //Выгрузка сообщений(нужен ли?)
         public void Loading_Messages(string SQL_Command)
         {
             try
@@ -167,120 +208,11 @@ namespace MSG_by_AL__XAML_
             {
                 //Закрываем соединение
                 connection.Close();
-                Mark_Read();
-            }
-        }
-
-        //Отметка сообщений прочитанными (по идее не нужен уже)
-        public void Mark_Read()
-        {
-            try
-            {
-                //Открываем соединение
-                connection.Open();
-
-                //Запускаем запрос на отметку сообщений, как прочитанные
-                string sql_cmd = "UPDATE server_chats.messages SET Visible_Message = 1 WHERE (ID_Reciever=@MYID AND ID_Sender = @FRIENDID AND Visible_Message = 0) LIMIT 1000";
-
-                //Создаём команду запроса
-                MySqlCommand cmd = connection.CreateCommand();
-                cmd.CommandText = sql_cmd;
-
-                //Добавляем параметры в запрос
-                MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                myID.Value = IDuser;
-                cmd.Parameters.Add(myID);
-
-                MySqlParameter friendID = new MySqlParameter("@FRIENDID", MySqlDbType.Int32);
-                friendID.Value = IDFriend;
-                cmd.Parameters.Add(friendID);
-
-                //Осуществляем запрос
-                cmd.ExecuteNonQuery();
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                //Закрыавем соединение 
-                connection.Close();
-            }
-        }
-
-        //Поиск непрочитанных сообщений в БД и открытие уведомление о них
-        public async void Search_Unread_Messages()
-        {
-            MySqlConnection conn = DBUtils.GetDBConnection();
-            List<int> id_messages = new List<int>();
-            while (true)
-            {
-                try
-                {
-                    //Открываем соединение
-                    await conn.OpenAsync();
-
-                    //Строка запроса в БД
-                    string sql_cmd = "SELECT server_chats.messages.ID,server_chats.messages.Date_Message,server_chats.messages.Text_Message, server_chats.users.User_Name, server_chats.messages.ID_Sender FROM server_chats.messages LEFT JOIN server_chats.users ON server_chats.messages.ID_Sender = server_chats.users.ID WHERE (server_chats.messages.ID_Reciever = @ID AND server_chats.messages.Visible_Message = 0 AND server_chats.messages.visible_notification = 0);";
-
-                    //Создаем команду для запроса
-                    MySqlCommand cmd = conn.CreateCommand();
-                    cmd.CommandText = sql_cmd;
-
-                    //Добавляем параметры
-                    MySqlParameter id = new MySqlParameter("@ID", MySqlDbType.Int32);
-                    id.Value = IDuser;
-                    cmd.Parameters.Add(id);
-
-                    //Начинаем считывать данные
-                    using (DbDataReader reader = cmd.ExecuteReader())
-                    {
-                        if (reader.HasRows)
-                        {
-                            while (reader.Read())
-                            {
-                                Dispatcher.Invoke(() => User_Name_Notification.Text = reader.GetString(3));
-                                Dispatcher.Invoke(() => Text_Message_Notification.Text = reader.GetString(2));
-                                Dispatcher.Invoke(() => SideNotificationShow());
-                                id_messages.Add(int.Parse(reader.GetString(0)));
-                                System.Threading.Thread.Sleep(4000);
-                                Dispatcher.Invoke(() => SideNotificationShow());
-                                System.Threading.Thread.Sleep(1500);
-                            }
-                        }
-                    }
-
-                    //Отмечаем непрочитанные сообщения, чтобы не повторялись в оповещении 
-                    foreach (int i in id_messages)
-                    {
-                        cmd.Parameters.Clear();
-                        //Запрос на обновление
-                        sql_cmd = "UPDATE server_chats.messages SET server_chats.messages.visible_notification = 1 WHERE ID = @IDMESSAGES;";
-                        cmd.CommandText = sql_cmd;
-                        MySqlParameter id_msg = new MySqlParameter("IDMESSAGES", MySqlDbType.Int32);
-                        id_msg.Value = i;
-                        cmd.Parameters.Add(id_msg);
-                        cmd.ExecuteNonQuery();
-                    }
-                    id_messages.Clear();
-
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.Message);
-                }
-                finally
-                {
-                    //Закрываем соединение
-                    await conn.CloseAsync();
-                    System.Threading.Thread.Sleep(5000);
-                }
             }
         }
 
         public bool Exp = false;
-        private void SideNotificationShow()
+        public async void SideNotificationShow()
         {
             if (Exp)
             {
@@ -296,18 +228,17 @@ namespace MSG_by_AL__XAML_
             }
         }
 
-        //Запуск асинхронной операции обновления текущего диалога
-        public void Refresh_Chat_Async()
+        //Запуск асинхронной операции обновления текущего диалога(06#)
+        public void Refresh_Chat_Async(int id_f)
         {
-            while (IDFriend != -1)
+            while (IDFriend == id_f)
             {
                 try
                 {
                     List<List<string>> values = ServerConnect.RecieveBigDataFromDB("06#",IDuser + "~" + IDFriend);
-                    foreach(List<string> value in values)
+                    if (values[0][0] != "ERROR")
                     {
-
-                        if (value[0] != "ERROR")
+                        foreach (List<string> value in values)
                         {
                             Message friend_message = new Message();
                             friend_message.Message_ID = int.Parse(value[0]);
@@ -316,12 +247,12 @@ namespace MSG_by_AL__XAML_
                             friend_message.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
                             friend_message.borderBrush = (Brush)Application.Current.Resources["FriendMessageColor"];
                             //Выполняет указанный делегат в оснвном потоке (т.к. к Control'у я не могу обратиться из этого потока)
-                            Dispatcher.Invoke(()=>Message_List.Items.Add(friend_message));
+                            Dispatcher.Invoke(() => Message_List.Items.Add(friend_message));
                             //Если непрочитанные сообщения есть, то нужно отметить их прочитанными
                             ServerConnect.RecieveBigDataFromDB("07#", IDuser + "~" + IDFriend);
+                            Dispatcher.Invoke(() => Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]));
+
                         }
-                        Dispatcher.Invoke(()=>Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]));
-                        
                     }
 
                 }
@@ -335,11 +266,11 @@ namespace MSG_by_AL__XAML_
                 }
 
                 //Приостанавливаем поток данной функции (снижает нагрузку на БД, ОЗУ, ЦП + 1,5 сек. не страшная задержка)
-                System.Threading.Thread.Sleep(5000);
+                Thread.Sleep(4000);
             }
         }
 
-        //Создание нового диалога с пользователем
+        //Создание нового диалога с пользователем (доработать)
         public bool CreateNewChat(int friendID, string friend_nick)
         {
             bool succesfull = false;
@@ -389,7 +320,47 @@ namespace MSG_by_AL__XAML_
             return succesfull;
         }
 
-        //Метод открытия диалога с пользователем
+        //Поиск пользователей(08#)
+        private void User_Search_Changed(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                //Предварительно очищаем список
+                User_List.Items.Clear();
+
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("08#", User_Search.Text);
+
+                if (values[0][0] != "ERROR")
+                {
+                    foreach (List<string> value in values)
+                    {
+                        //Создаём кастомизированный item для списка пользователей и добавляем ему свойства
+                        Chat_List user = new Chat_List();
+                        IDFriend = int.Parse(value[0]);
+                        user.Name = value[1];
+                        user.ID_Friend = IDFriend;
+                        user.Nickname = value[2];
+                        User_List.Items.Add(user);
+                        Friend_Nick = value[2];
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                //Выводим сообщения об ошибке
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                if (User_List.Items.Count == 0)
+                {
+                    IDFriend = -1;
+                    Friend_Nick = "null";
+                }
+            }
+        }
+
+        //Метод открытия диалога с пользователем(05#)
         public async void OpenChat(int friend_ID)
         {
             //Закрываем предыдущий диалог
@@ -397,91 +368,37 @@ namespace MSG_by_AL__XAML_
 
             try
             {
-                    IDFriend = friend_ID;
-                    Dispatcher.Invoke(()=>Close_Dialog.Visibility = Visibility.Visible);
-                    Dispatcher.Invoke(()=>MySlider.Visibility = Visibility.Visible);
-                    Dispatcher.Invoke(()=>Name_Friend.Visibility = Visibility.Visible);
-
+                IDFriend = friend_ID;
                 List<List<string>> values = ServerConnect.RecieveBigDataFromDB("05#",IDuser + "~" + IDFriend);
-
-                foreach(List<string> value in values)
+                if (values[0][0] != "ERROR")
                 {
-                    if (int.Parse(value[3]) == IDuser)
+                    foreach (List<string> value in values)
                     {
-                        //Создадим объект привязки данных и определим свойства
-                        Message MSG = new Message();
-                        MSG.Message_ID = int.Parse(value[0]);
-                        MSG.Message_Text = value[1];
-                        MSG.Message_Date = value[2];
-                        MSG.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
-                        MSG.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
-                        Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
-                    }
-                    if (int.Parse(value[3]) == IDFriend)
-                    {
-                        Message MSG = new Message();
-                        MSG.Message_ID = int.Parse(value[0]);
-                        MSG.Message_Text = value[1];
-                        MSG.Message_Date = value[2];
-                        MSG.borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
-                        MSG.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
-                        Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
-                    }
-                }
-
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                await Task.Run(() => Refresh_Chat_Async());
-            }
-        }
-
-        //Функция возвращает имя чата по ID его пользователей
-        public string GetChatName(int friend_ID)
-        {
-            //Имя чата
-            string NAME = "null";
-
-            //Объект для создания подключения к БД
-            MySqlConnection conn = DBUtils.GetDBConnection();
-
-            try
-            {    
-                //Открываем соединение
-                conn.Open();
-
-                //Строка запроса
-                string sql_cmd = "SELECT server_chats.chats.Chat_Name FROM server_chats.chats WHERE (ID_User_1 = @MYID AND ID_User_2 = @IDFRIEND) OR (ID_User_1 = @IDFRIEND AND ID_User_2 = @MYID);";
-
-                //Команда запроса
-                MySqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = sql_cmd;
-
-                //Добавляем параметры
-                MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                myID.Value = IDuser;
-                cmd.Parameters.Add(myID);
-
-                MySqlParameter friendID = new MySqlParameter("@IDFRIEND", MySqlDbType.Int32);
-                friendID.Value = friend_ID;
-                cmd.Parameters.Add(friendID);
-
-                //Получаем имя чата
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
+                        if (int.Parse(value[3]) == IDuser)
                         {
-                            NAME = reader.GetString(0);
+                            //Создадим объект привязки данных и определим свойства
+                            Message MSG = new Message();
+                            MSG.Message_ID = int.Parse(value[0]);
+                            MSG.Message_Text = value[1];
+                            MSG.Message_Date = value[2];
+                            MSG.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
+                            MSG.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
+                            Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
+                        }
+                        if (int.Parse(value[3]) == IDFriend)
+                        {
+                            Message MSG = new Message();
+                            MSG.Message_ID = int.Parse(value[0]);
+                            MSG.Message_Text = value[1];
+                            MSG.Message_Date = value[2];
+                            MSG.borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
+                            MSG.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
+                            Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
                         }
                     }
+                    ServerConnect.RecieveBigDataFromDB("07#", IDuser + "~" + IDFriend);
                 }
+
 
             }
             catch (Exception ex)
@@ -490,100 +407,21 @@ namespace MSG_by_AL__XAML_
             }
             finally
             {
-                //Закрываем соединение
-                conn.Close();
+                if(Message_List.Items.Count != 0) Dispatcher.Invoke(() => Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]));
+                await Task.Run(() => Refresh_Chat_Async(friend_ID));
             }
-
-            return NAME;
         }
 
-        //Функция возвращает имя пользователя по его ID
-        public string GetUserName(int friend_ID)
-        {
-            //Имя пользователя
-            string NAME="null";
-
-            //Объект для создания подключения к БД
-            MySqlConnection conn = DBUtils.GetDBConnection();
-
-            try
-            {
-                //Открываем соединение
-                conn.Open();
-
-                //Строка запроса
-                string sql_cmd = "SELECT server_chats.users.User_Name FROM server_chats.users WHERE ID = @IDFRIEND";
-
-                //Команда запроса
-                MySqlCommand cmd = conn.CreateCommand();
-                cmd.CommandText = sql_cmd;
-
-                //Добавляем параметры
-                MySqlParameter friendID = new MySqlParameter("@IDFRIEND", MySqlDbType.Int32);
-                friendID.Value = friend_ID;
-                cmd.Parameters.Add(friendID);
-
-                //Получаем имя чата
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            NAME = reader.GetString(0);
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                //Закрываем соединение
-                conn.Close();
-            }
-
-            //Возвращаем имя пользователя
-            return NAME;
-        }
-
-        //Метод отправки сообщений
+        //Метод отправки сообщений (10#)
         private void Sending_Message()
         {
             //Чтобы не отправлялись пустые сообщения
             if (TextBox_Message.Text.Length != 0)
             {
-                try
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("10#", IDuser + "~" + IDFriend + "~" + TextBox_Message.Text + "~");
+
+                if (values[0][0] == "SEND")
                 {
-                    //Открываем соединение
-                    connection.Open();
-
-                    //Строка запроса для БД (недописана)
-                    string sql_cmd = "INSERT INTO server_chats.messages (Text_Message, Date_Message, ID_Sender, ID_Reciever, Visible_Message) VALUES (@TEXT, NOW(), @MYID, @FRIENDID, 0);";
-
-                    //Команда запроса
-                    MySqlCommand cmd = connection.CreateCommand();
-                    cmd.CommandText = sql_cmd;
-
-                    //Добавляем параметры
-                    MySqlParameter text_message = new MySqlParameter("@TEXT", MySqlDbType.Text);
-                    text_message.Value = TextBox_Message.Text;
-                    cmd.Parameters.Add(text_message);
-
-                    MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                    myID.Value = IDuser;
-                    cmd.Parameters.Add(myID);
-
-                    MySqlParameter friendID = new MySqlParameter("@FRIENDID", MySqlDbType.Int32);
-                    friendID.Value = IDFriend;
-                    cmd.Parameters.Add(friendID);
-
-                    //Выполняем запрос
-                    cmd.ExecuteNonQuery();
-
                     //Добавляем сообщение в диалог
                     //Нет возможности добавить ID для своего сообщения, т.к. его формирует БД
                     //Отправленное сообщение возможно не получится удалить, пока не перезайти в диалог
@@ -597,17 +435,31 @@ namespace MSG_by_AL__XAML_
                     Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
                     TextBox_Message.Text = "";
                 }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-                finally
-                {
-                    //Закрываем соединение
-                    connection.Close();
-                }
             }
         }
+
+        //Добавление пользователя в друзья(11#)
+        private void AddToFriend_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                Chat_List user = (Chat_List)User_List.Items[0];
+
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("11#", IDuser + "~" + user.ID_Friend + "~" + user.Name + "~" + user.Nickname + "~");
+
+                //После успешного выполнения команды, будет дополнен список друзей
+                if (values[0][0] == "ОК") Friend_List.Items.Add(user);
+                else MessageBox.Show(values[0][0]);
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+        }
+
+
 
 
 
@@ -626,69 +478,10 @@ namespace MSG_by_AL__XAML_
             main.Show();
         }
 
-        //Обновление списка чатов
-        private void Update_Chat_List_Click(object sender, RoutedEventArgs e)
+        //Открытие своего профиля(доработать)
+        private void Open_Profile(object sender, EventArgs e)
         {
-            Update_Dialog_List();
-        }
 
-        //Поиск пользователей
-        private void User_Search_Changed(object sender, RoutedEventArgs e)
-        {
-            try
-            {
-                //Предварительно очищаем список
-                User_List.Items.Clear();
-
-                //Открываем соединение
-                connection.Open();
-
-                //Строка запроса на поиск пользователей в БД
-                string sql_cmd = "SELECT server_chats.users.ID, server_chats.users.User_Name, server_chats.users.User_Nickname FROM server_chats.users WHERE server_chats.users.User_Name=@NAME";
-
-                //Создаём команду для запроса в БД
-                MySqlCommand cmd = connection.CreateCommand();
-                cmd.CommandText = sql_cmd;
-
-                //Добавляем параметры в команду
-                MySqlParameter name_parameter = new MySqlParameter("@NAME", MySqlDbType.VarChar);
-                name_parameter.Value = User_Search.Text;
-                cmd.Parameters.Add(name_parameter);
-
-                //...
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            //Создаём кастомизированный item для списка пользователей и добавляем ему свойства
-                            Chat_List user = new Chat_List();
-                            IDFriend = int.Parse(reader.GetString(0));
-                            user.Name = reader.GetString(1);
-                            user.ID_Friend = IDFriend;
-                            User_List.Items.Add(user);
-                            Friend_Nick = reader.GetString(2);
-                        }
-                    }
-                }
-
-            }
-            catch (Exception ex)
-            {
-                //Выводим сообщения об ошибке
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                //Закрываем соединение
-                connection.Close();
-                if (User_List.Items.Count == 0)
-                {
-                    IDFriend = -1;
-                    Friend_Nick = "null";
-                }
-            }
         }
 
         //Отпрвака сообщения
@@ -697,79 +490,20 @@ namespace MSG_by_AL__XAML_
             Sending_Message();
         }
 
-        //Действия при закрытии диалога
-        private void Close_Dialog_Click(object sender, RoutedEventArgs e)
-        {
-            //Очищаем список сообщений
-            Message_List.Items.Clear();
-
-            //Стираем все данные о собеседнике
-            IDFriend = -1;
-            Friend_Nick = "null";
-
-            //Скрываем элементы управления диалогом
-            Close_Dialog.Visibility = Visibility.Hidden;
-            MySlider.Visibility = Visibility.Hidden;
-            Name_Friend.Visibility = Visibility.Hidden;
-
-        }
-
-        //Добавление пользователя в друзья
-        private void AddToFriend_Click(object sender, RoutedEventArgs e)
-        {
-                try
-                {
-                    //Объект item'а, но только первого (если будут с одинаковыми именами, тогда будут проблемы)
-                    //Нужно изменить функцию поиска с имени на никнейм
-                    Chat_List user = (Chat_List)User_List.Items[0];
-
-                    //Открываем соединение 
-                    connection.Open();
-
-                    //Строка запроса на добавление пользователя в список друзей
-                    string sql_cmd = "INSERT INTO server_chats.friend VALUES (@MYID, @IDFRIEND, @FRIENDNAME);";
-
-                    //Команда запроса
-                    MySqlCommand cmd = connection.CreateCommand();
-                    cmd.CommandText = sql_cmd;
-
-                    //Добавляем параметры
-                    MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                    myID.Value = IDuser;
-                    cmd.Parameters.Add(myID);
-
-                    MySqlParameter friendID = new MySqlParameter("@IDFRIEND", MySqlDbType.Int32);
-                    friendID.Value = user.ID_Friend;
-                    cmd.Parameters.Add(friendID);
-
-                    MySqlParameter name = new MySqlParameter("@FRIENDNAME", MySqlDbType.VarChar);
-                    name.Value = user.Name;
-                    cmd.Parameters.Add(name);
-
-                    //Запускаем команду
-                    cmd.ExecuteNonQuery();
-
-                    //После успешного выполнения команды, будет дополнен список друзей
-                    Friend_List.Items.Add(user);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(ex.ToString());
-                }
-                finally
-                {
-                    //Закрываем соединение
-                    connection.Close();
-                    User_Search.Clear();
-                }
-        }
-
         //Открытие диалога
         private async void Chat_list_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            IDFriend = -1;
-            Chat_List item = (Chat_List)Dispatcher.Invoke(()=>Chat_list.SelectedItem);
-            await Task.Run(() => OpenChat(item.ID_Friend));
+            Chat_List item = (Chat_List)Dispatcher.Invoke(() => Chat_list.SelectedItem);
+            if (IDFriend == item.ID_Friend)
+            {
+                Dispatcher.Invoke(() => Message_List.Items.Clear());
+                IDFriend = -1;
+            }
+            else
+            {
+                IDFriend = -1;
+                await Task.Run(() => OpenChat(item.ID_Friend));
+            }
         }
 
         //Удаление пользователя из друзей
@@ -827,7 +561,7 @@ namespace MSG_by_AL__XAML_
 
             //Стираем все данные о собеседнике
             IDFriend = int.Parse(Dispatcher.Invoke(() => btn.Content.ToString()));
-            Friend_Nick = GetUserName(IDFriend);
+            //Friend_Nick = GetUserName(IDFriend);
             if(CreateNewChat(IDFriend, Friend_Nick)!=true) await Task.Run(() => OpenChat(IDFriend));
         }
 
@@ -874,20 +608,18 @@ namespace MSG_by_AL__XAML_
         }
 
         //Развернуть или свернуть меню
-        private void Show_Hidden_Menu(object sender, RoutedEventArgs e)
+        private void Show_Hidden_Menu(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            int height = int.Parse((Convert.ToString(MenuGrid.Height)));
+            int height = int.Parse(Convert.ToString(BigGrid.RowDefinitions[0].Height));
             //Если свернуто, развернуть
-            if(height == 20)
+            if (height == 20)
             {
-                BigGrid.RowDefinitions[0].Height = new GridLength(40);
-                MenuShow.Height = 40;
+                BigGrid.RowDefinitions[0].Height = new GridLength(33);
             }
             //Иначе свернуть
-            if (height == 40)
+            if (height == 33)
             {
                 BigGrid.RowDefinitions[0].Height = new GridLength(20);
-                MenuShow.Height = 20;
             }
         }
 
@@ -948,7 +680,6 @@ namespace MSG_by_AL__XAML_
                 Notification_Search_Window.BeginAnimation(ContentControl.HeightProperty, anim);
             }
         }
-
         //Убирает уведомление при смене фокуса
         private void UIElement_LostFocus(object sender, RoutedEventArgs e)
         {
@@ -961,21 +692,32 @@ namespace MSG_by_AL__XAML_
             this.Close();
         }
 
-        private void Show_Hidden_Menu(object sender, System.Windows.Input.MouseEventArgs e)
+        private void Show_Hidden_Menu(object sender, RoutedEventArgs e)
         {
-            int height = int.Parse((Convert.ToString(MenuGrid.Height)));
-            //Если свернуто, развернуть
-            if (height == 20)
-            {
-                BigGrid.RowDefinitions[0].Height = new GridLength(40);
-                MenuShow.Height = 40;
-            }
-            //Иначе свернуть
-            if (height == 40)
-            {
-                BigGrid.RowDefinitions[0].Height = new GridLength(20);
-                MenuShow.Height = 20;
-            }
+            //int height = int.Parse((Convert.ToString(MenuGrid.Height)));
+            ////Если свернуто, развернуть
+            //if (height == 20)
+            //{
+            //    var anim = new DoubleAnimation(20, (Duration)TimeSpan.FromSeconds(0.5));
+            //    anim.Completed += (s, _) => Menu_Exp = false;
+            //    Menu.BeginAnimation(ContentControl.HeightProperty, anim);
+            //    //    BigGrid.RowDefinitions[0].Height = new GridLength(40);
+            //    //    MenuShow.Height = 40;
+            //}
+            ////Иначе свернуть
+            //if (height == 40)
+            //{
+            //    var anim = new DoubleAnimation(40, (Duration)TimeSpan.FromSeconds(0.5));
+            //    anim.Completed += (s, _) => Menu_Exp = false;
+            //    Menu.BeginAnimation(ContentControl.HeightProperty, anim);
+            //    //BigGrid.RowDefinitions[0].Height = new GridLength(20);
+            //    //MenuShow.Height = 20;
+            //}
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 }

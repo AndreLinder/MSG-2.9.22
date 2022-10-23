@@ -9,7 +9,7 @@
         Height="400" 
         Width="500" 
         WindowStyle="ThreeDBorderWindow" 
-        Icon="Icons/MSG_BY_AL.ico" 
+        Icon="Icons\MSG_BY_AL.ico" 
         WindowStartupLocation="CenterScreen"
          
         Background="{StaticResource BackgroundColor}">
@@ -167,7 +167,8 @@
                 Width="40"
                 VerticalAlignment="Bottom"
                 Style="{StaticResource ButtonIconAnimation}"
-                Content="5"/>
+                Content="5"
+                Visibility="Hidden"/>
     </Grid>
 </Window>
 

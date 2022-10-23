@@ -22,5 +22,8 @@ namespace MSG_by_AL__XAML_.Resource
 
         //ID собеседника
         public int ID_Friend { get; set; }
+
+        //Никнейм пользователя (просто нужен)
+        public string Nickname { get; set; }
     }
 }

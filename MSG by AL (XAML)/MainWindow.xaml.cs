@@ -47,10 +47,11 @@ namespace MSG_by_AL__XAML_
                 {
                     NickName = login_txt.Text;
                     IDuser = int.Parse(values[0]);
+                    NickName = values[1];
                     MessageBox.Show("Авторизация прошла успешно!", "Success", MessageBoxButton.OK, MessageBoxImage.Asterisk);
                     //SuccessSignIn();
                     //Открываем основное окно и передаём в него сведения об авторизованном пользователе
-                    ChatsPage chatpage = new ChatsPage(IDuser);
+                    ChatsPage chatpage = new ChatsPage(IDuser, NickName);
                     chatpage.Show();
                     this.Close();
                 }

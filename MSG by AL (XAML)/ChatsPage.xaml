@@ -13,43 +13,54 @@
         Icon="Icons/MSG_BY_AL.ico"  
         Closing="ChatPage_Closing"
         WindowStartupLocation="CenterScreen">
-    <Grid x:Name="BigGrid">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition x:Name="MenuGrid"
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <!--Основное меню с активными чатами и списком чатов-->
+        <Grid x:Name="BigGrid"
+              Grid.Row="0"
+              Grid.Column="0"
+              Visibility="Visible">
+            <Grid.RowDefinitions>
+                <RowDefinition x:Name="MenuGrid"
                               MinHeight="20"
                               MaxHeight="40"
-                              Height="20">
-            </RowDefinition>
-            <RowDefinition   x:Name="MainGrid" Height="*">
-            </RowDefinition>
-        </Grid.RowDefinitions>
+                               Height="20">
+                </RowDefinition>
+                <RowDefinition   x:Name="MainGrid" Height="*">
+                </RowDefinition>
+            </Grid.RowDefinitions>
 
-        <!--Боковое Уведомление-->
-        <Grid Grid.RowSpan="2"
+            <!--Боковое Уведомление-->
+            <Grid Grid.RowSpan="2"
               Panel.ZIndex="1">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="Auto"></ColumnDefinition>
-            </Grid.ColumnDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="Auto"></ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <Grid Grid.Column="1"
+                <Grid Grid.Column="1"
                   HorizontalAlignment="Center"
                   VerticalAlignment="Bottom"
                   Width="0"
                   Height="80"
                   x:Name="Side_Notification"
                   Margin="0, 3">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="80"
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="80"
                                       MaxWidth="80"></ColumnDefinition>
-                    <ColumnDefinition></ColumnDefinition>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition></RowDefinition>
-                    <RowDefinition></RowDefinition>
-                </Grid.RowDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition></RowDefinition>
+                        <RowDefinition></RowDefinition>
+                    </Grid.RowDefinitions>
 
-                <Border Background="{StaticResource BackgroundColor}"
+                    <Border Background="{StaticResource BackgroundColor}"
                         Width="265"
                         Height="80"
                         VerticalAlignment="Bottom"
@@ -59,8 +70,8 @@
                         Margin="3,0"
                         Grid.RowSpan="2"
                         Grid.ColumnSpan="2">
-                </Border>
-                <Image Source="Icons/Message.ico" 
+                    </Border>
+                    <Image Source="Icons/Message.ico" 
                        Grid.Column="0"
                        Grid.RowSpan="2"
                        Height="50"
@@ -68,7 +79,7 @@
                        HorizontalAlignment="Left"
                        Margin="15,0"/>
 
-                <Border Grid.Row="0"
+                    <Border Grid.Row="0"
                            Grid.Column="1"
                            HorizontalAlignment="Center"
                            VerticalAlignment="Center"
@@ -78,8 +89,8 @@
                         Opacity="0.6"
                         CornerRadius="15" 
                         Margin="1,8,9,1">
-                </Border>
-                <TextBlock x:Name="User_Name_Notification"
+                    </Border>
+                    <TextBlock x:Name="User_Name_Notification"
                            Grid.Row="0"
                            Grid.Column="1"
                            VerticalAlignment="Center"
@@ -88,8 +99,8 @@
                            Foreground="{StaticResource TextColor2}"
                            HorizontalAlignment="Center"
                            Background="Transparent">
-                </TextBlock>
-                <TextBlock x:Name="Text_Message_Notification"
+                    </TextBlock>
+                    <TextBlock x:Name="Text_Message_Notification"
                            Grid.Column="1"
                            Grid.Row="1"
                            HorizontalAlignment="Center"
@@ -99,95 +110,13 @@
                            FontSize="12"
                            TextWrapping="Wrap" Foreground="#FF221616"
                            >
-                </TextBlock>
+                    </TextBlock>
 
-            </Grid>
-        </Grid>
-
-        <Grid Margin="0,0,0.2,0"
-              Grid.Column="1"
-              Grid.Row="1">
-
-            <!--Список найденных пользователей-->
-            <Label x:Name="Name_Friend"
-               Visibility="Hidden"
-               HorizontalAlignment="Left" 
-               Margin="185,0,0,0" 
-               VerticalAlignment="Top" 
-               Height="32" 
-               Width="212"
-               Foreground="{StaticResource BorderBrush}"
-               HorizontalContentAlignment="Center"
-               VerticalContentAlignment="Top"
-               BorderThickness="3"
-               BorderBrush="{StaticResource BorderBrush}"
-               FontSize="14"
-               FontFamily="Palatino Linotype"/>
-
-            <!--Кнопка обновления списка чатов-->
-            <Button x:Name="Update_Chat_List" 
-                Style="{StaticResource ButtonStyleICO}" 
-                HorizontalAlignment="Left" 
-                VerticalAlignment="Top" 
-                Width="26" 
-                Height="26" 
-                Margin="5,3,0,0" 
-                Click="Update_Chat_List_Click" 
-                FontFamily="Palatino Linotype" 
-                RenderTransformOrigin="0.46,0.505"
-                ToolTip="Обновить список чатов в ручную (редко необходимо)"/>
-
-            <!--"Ползунок" для выборки определённого кол-ва сообщений из диалога-->
-            <Grid x:Name="MySlider" 
-              Margin="577,0,215.2,505"
-              Visibility="Hidden">
-                <Button x:Name="MinusButton" 
-                    HorizontalAlignment="Left" 
-                    Width="25" Height="20" 
-                    Style="{StaticResource TriangleButtonStyle}" 
-                    Background="{StaticResource StandartButton}" 
-                    BorderBrush="{StaticResource BorderBrush}" 
-                    RenderTransformOrigin="0.5,0.5" 
-                    Margin="-11,0,0,0">
-                    <Button.RenderTransform>
-                        <TransformGroup>
-                            <ScaleTransform/>
-                            <SkewTransform/>
-                            <RotateTransform Angle="180"/>
-                            <TranslateTransform/>
-                        </TransformGroup>
-                    </Button.RenderTransform>
-                </Button>
-                <Button x:Name="PlusButton" 
-                    HorizontalAlignment="Right" 
-                    Width="29" 
-                    Style="{StaticResource TriangleButtonStyle}" 
-                    Background="{StaticResource StandartButton}" 
-                    RenderTransformOrigin="0.5,0.5" 
-                    Margin="0,0,-14,0"
-                    BorderBrush="{StaticResource BorderBrush}"/>
-                <Button Width="50" 
-                    HorizontalAlignment="Left" 
-                    Content="1...100" 
-                    Style="{StaticResource ButtonStyle}"
-                    HorizontalContentAlignment="Center" 
-                    VerticalContentAlignment="Stretch" 
-                    Height="20" 
-                    Margin="15,0,0,0"/>
+                </Grid>
             </Grid>
 
-            <!--Закрытие текущего диалога-->
-            <Button x:Name="Close_Dialog"
-                Visibility="Hidden"
-                Background="{StaticResource StandartButton}" 
-                Margin="158,0,691,505"
-                Style="{StaticResource ButtonStyleICO2}" 
-                Click="Close_Dialog_Click"
-                ToolTip="Закрыть текущий диалог"/>
-        </Grid>
-
-        <!--Кнопка для создания эффекта размытия-->
-        <Button x:Name="ButtonBlurEffect"
+            <!--Кнопка для создания эффекта размытия-->
+            <Button x:Name="ButtonBlurEffect"
                 Grid.Row="1"
                 Background="Black"
                 Opacity="0.75"
@@ -195,113 +124,111 @@
                 Panel.ZIndex="1" 
                 Style="{StaticResource ButtonBlurEffect}"
                 GotFocus="UIElement_LostFocus">
-            <Button.Effect>
-                <BlurEffect Radius="90">
-                </BlurEffect>
-            </Button.Effect>
-        </Button>
-
-        <!--Верхнее меню-->
-        <Grid x:Name="Menu"
+                <Button.Effect>
+                    <BlurEffect Radius="90">
+                    </BlurEffect>
+                </Button.Effect>
+            </Button>
+            
+            <!--Верхнее меню-->
+            <Grid x:Name="Menu"
               Grid.Column="0"
               HorizontalAlignment="Stretch"
               VerticalAlignment="Top">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MaxWidth="25">
-                </ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition Width="50">
-                </ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <!--Кнопка "Развернуть меню"-->
-            <Button Style="{StaticResource ButtonStyleMenu}"
-                        Click="Show_Hidden_Menu"
-                        
-                        local:ButtonImage.Image="Icons/Menu.ico"
-                        x:Name="MenuShow"
-                        Grid.Column="0"
-                    VerticalContentAlignment="Center" 
-                    MouseEnter="Show_Hidden_Menu"
-                    MouseLeave="Show_Hidden_Menu">
-            </Button>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition Width="80">
+                    </ColumnDefinition>
+                </Grid.ColumnDefinitions>
 
-            <!--Кнопка поиска пользователей-->
-            <Button Style="{StaticResource ButtonStyleMenu}"
+                <!--Кнопка поиска пользователей-->
+                <Button Style="{StaticResource ButtonStyleMenu}"
                     local:ButtonImage.Image="Icons/Search.ico"
                     Content="Поиск пользователей"
-                    Grid.Column="1"
+                    Grid.Column="0"
                     HorizontalAlignment="Stretch"
-                    Click="Show_Search_Menu">
-            </Button>
+                    Click="Show_Search_Menu"
+                    MouseEnter="Show_Hidden_Menu"
+                    MouseLeave="Show_Hidden_Menu">
+                </Button>
 
-            <!--Кнопка "Открыть список диалогов"-->
-            <Button Style="{StaticResource ButtonStyleMenu}"
-                    local:ButtonImage.Image="Icons/Chats.ico"
+                <!--Кнопка "Открыть список диалогов"-->
+                <Button Style="{StaticResource ButtonStyleMenu}"
+                    local:ButtonImage.Image="Icons/Profile.ico"
                     Content="Мои диалоги"
-                    Grid.Column="2" 
-                    HorizontalAlignment="Stretch">
-            </Button>
+                    Grid.Column="1" 
+                    HorizontalAlignment="Stretch"
+                    Click="Open_Profile"
+                    MouseEnter="Show_Hidden_Menu"
+                    MouseLeave="Show_Hidden_Menu">
+                </Button>
 
-            <!--Кнопка "Мои друзья"-->
-            <Button Style="{StaticResource ButtonStyleMenu}"
+                <!--Кнопка "Мои друзья"-->
+                <Button Style="{StaticResource ButtonStyleMenu}"
                     local:ButtonImage.Image="Icons/Users.ico"
+                        Visibility="Visible"
                     Content="Мои друзья"
-                    Grid.Column="3"
-                    Click="FriendList_Show_Hidden">
-            </Button>
+                    Grid.Column="2"
+                    Click="FriendList_Show_Hidden"
+                    MouseEnter="Show_Hidden_Menu"
+                    MouseLeave="Show_Hidden_Menu">
+                </Button>
 
-            <!--Кнопка "О приложении"-->
-            <Button Style="{StaticResource ButtonStyleMenu}"
+                <!--Кнопка "О приложении"-->
+                <Button Style="{StaticResource ButtonStyleMenu}"
                     local:ButtonImage.Image="Icons/Info.ico"
                     Content="О приложении"
-                    Grid.Column="4">
+                    Grid.Column="3"
+                    MouseEnter="Show_Hidden_Menu"
+                    MouseLeave="Show_Hidden_Menu">
+                </Button>
 
-            </Button>
-
-            <!--Кнопка "выйти"-->
-            <Button Style="{StaticResource ButtonStyleMenu}"
+                <!--Кнопка "выйти"-->
+                <Button Style="{StaticResource ButtonStyleMenu}"
                     local:ButtonImage.Image="Icons/Exit.ico"
-                    Grid.Column="5"
+                    Grid.Column="4"
                     Content="Выйти"
-                    Click="Exit_Account">
-            </Button>
-        </Grid>
+                    Click="Exit_Account"
+                    MouseEnter="Show_Hidden_Menu"
+                    MouseLeave="Show_Hidden_Menu">
+                </Button>
+            </Grid>
 
-        <!--Окно поиска-->
-        <Grid x:Name="SearchWindow"
+            <!--Окно поиска-->
+            <Grid x:Name="SearchWindow"
               Grid.Row="1"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
               Visibility="Hidden"
               Panel.ZIndex="1"
               Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition></ColumnDefinition>
-                <ColumnDefinition MaxWidth="500"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition></ColumnDefinition>
+                    <ColumnDefinition MaxWidth="500"
                                   MinWidth="300"
                                   Width="450">
-                </ColumnDefinition>
-                <ColumnDefinition></ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition MaxHeight="30">
-                </RowDefinition>
-                <RowDefinition MinHeight="370"></RowDefinition>
-                <RowDefinition Height="Auto"></RowDefinition>
-            </Grid.RowDefinitions>
+                    </ColumnDefinition>
+                    <ColumnDefinition></ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition MaxHeight="30">
+                    </RowDefinition>
+                    <RowDefinition MinHeight="370"></RowDefinition>
+                    <RowDefinition Height="Auto"></RowDefinition>
+                </Grid.RowDefinitions>
 
-            <Border Background="{StaticResource BackgroundColor}"
+                <Border Background="{StaticResource BackgroundColor}"
                     CornerRadius="10"
                     Grid.Column="1"
                     Grid.RowSpan="3"
                     GotFocus="UIElement_LostFocus">
-            </Border>
+                </Border>
 
-            <!--Поле поиска пользователей в программе-->
-            <TextBox x:Name="User_Search" 
+                <!--Поле поиска пользователей в программе-->
+                <TextBox x:Name="User_Search" 
                     Style="{StaticResource TextBoxStyle}" 
                     HorizontalAlignment="Center" 
                     Height="25" 
@@ -314,8 +241,8 @@
                      Grid.Row="0"
                      GotFocus="UIElement_LostFocus"/>
 
-            <!--Список найденных пользователей-->
-            <ListBox x:Name="User_List" 
+                <!--Список найденных пользователей-->
+                <ListBox x:Name="User_List" 
                     HorizontalAlignment="Stretch" 
                     VerticalAlignment="Stretch"  
                     Cursor="Hand" 
@@ -329,115 +256,116 @@
                      Opacity="0.7"
                      HorizontalContentAlignment="Stretch"
                      GotFocus="UIElement_LostFocus">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <StackPanel Orientation="Vertical">
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition></ColumnDefinition>
-                                                <ColumnDefinition Width="25"></ColumnDefinition>
-                                                <ColumnDefinition Width="25"></ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="40"></RowDefinition>
-                                                <RowDefinition Height="5"></RowDefinition>
-                                            </Grid.RowDefinitions>
-                                            <Border CornerRadius="10" 
-                                                Background="{StaticResource IsMouseOverColor}" 
-                                                HorizontalAlignment="Stretch"
-                                                Grid.Column="0"
-                                                Grid.Row="0">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition></RowDefinition>
-                                                        <RowDefinition></RowDefinition>
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="45"></ColumnDefinition>
-                                                        <ColumnDefinition></ColumnDefinition>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Image Grid.Column="0"
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <StackPanel Orientation="Vertical">
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition></ColumnDefinition>
+                                                    <ColumnDefinition Width="40"></ColumnDefinition>
+                                                    <ColumnDefinition Width="40"></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="40"></RowDefinition>
+                                                    <RowDefinition Height="5"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Border CornerRadius="15" 
+                                                        Background="{StaticResource BackgroundButton}"
+                                                        HorizontalAlignment="Stretch"
+                                                        Grid.Column="0"
+                                                        Grid.Row="0"
+                                                        Grid.ColumnSpan="3">
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition></RowDefinition>
+                                                            <RowDefinition></RowDefinition>
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="45"></ColumnDefinition>
+                                                            <ColumnDefinition></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Image Grid.Column="0"
                                                            Grid.RowSpan="2"
-                                                           Source="Icons/Users.ico"
+                                                           Source="Icons/Profile.ico"
                                                            Margin="5,0"/>
-                                                    <TextBlock Text="{Binding Name}" 
+                                                        <TextBlock Text="{Binding Name}" 
                                                                 Background="Transparent" 
                                                                 HorizontalAlignment="Center" 
                                                                 VerticalAlignment="Center"
-                                                                Foreground="{StaticResource TextColor2}"
+                                                                Foreground="{StaticResource TextColor1}"
                                                                 FontSize="14"
                                                                 FontFamily="Palatino Linotype"
                                                                 TextWrapping="Wrap"
                                                                 ToolTip="Найденный пользователь"
                                                                Grid.Row="0"
                                                                Grid.Column="1"/>
-                                                    <TextBlock Text="{Binding Nickname}"
+                                                        <TextBlock x:Name="nick" Text="{Binding Nickname}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"
-                                                               Foreground="#FF424242"
                                                                FontSize="12"
                                                                FontFamily="Palatino Linotype"
+                                                               Foreground="{StaticResource IsMouseOverColor}"
                                                                TextWrapping="Wrap"
                                                                Grid.Row="1"
                                                                Grid.Column="1">
-                                                    </TextBlock>
-                                                </Grid>
-                                            </Border>
-                                            <Button x:Name="AddToFriend" 
-                                                Style="{StaticResource ButtonStyleICO}"
-                                                local:ButtonImage.Image="Add.ico"
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+                                                <Button x:Name="AddToFriend" 
+                                                Style="{StaticResource ButtonStyleICO2}"
+                                                local:ButtonImage.Image="Icons\Add.ico"
                                                 Height="25"
-                                                Width="25"
+                                                Width="40"
                                                 Click="AddToFriend_Click"
                                                 Content="{Binding ID_Friend}"
                                                 ToolTip="Добавить в друзья"
                                                 Grid.Column="1"
                                                 Grid.Row="0"/>
-                                            <Button x:Name="Writing" 
-                                                Style="{StaticResource ButtonStyleICO}"
+                                                <Button x:Name="Writing" 
+                                                Style="{StaticResource ButtonStyleICO2}"
                                                 local:ButtonImage.Image="Icons\Write.ico"
                                                 Height="25"
-                                                Width="25"
+                                                Width="40"
                                                 Content="{Binding ID_Friend}"
                                                 Click="Writing_Click"
                                                 ToolTip="Написать пользователю"
                                                 Grid.Column="2"
                                                 Grid.Row="0"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
+                                            </Grid>
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
 
-            <Grid x:Name="Notification_Search_Window"
+                <Grid x:Name="Notification_Search_Window"
                   Grid.Row="2"
                   Grid.Column="1"
                   Height="0"
               LostFocus="UIElement_LostFocus"
               HorizontalAlignment="Center">
-                <Border CornerRadius="10"
+                    <Border CornerRadius="10"
                     Background="{StaticResource BackgroundColor2}">
-                    <Grid HorizontalAlignment="Center">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                            <ColumnDefinition Width="Auto"></ColumnDefinition>
-                        </Grid.ColumnDefinitions>
-                        <Grid.RowDefinitions>
-                            <RowDefinition Height="20"></RowDefinition>
-                        </Grid.RowDefinitions>
-                        <Image x:Name="Notification_Image"
-                   Source="/Success.png"
+                        <Grid HorizontalAlignment="Center">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                                <ColumnDefinition Width="Auto"></ColumnDefinition>
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="20"></RowDefinition>
+                            </Grid.RowDefinitions>
+                            <Image x:Name="Notification_Image"
+                   Source="Icons/Success.png"
                    Grid.Column="0"
                    HorizontalAlignment="Right"
                            VerticalAlignment="Center"
                            Margin="5,3,5,3"/>
-                        <TextBlock x:Name="Notification_Text"
+                            <TextBlock x:Name="Notification_Text"
                        Text="Пользователь добавлен в друзья!"
                        Grid.Column="1"
                        HorizontalAlignment="Left"
@@ -446,40 +374,40 @@
                        FontFamily="Palatino Linotype"
                        FontSize="14"
                        Margin="5,-1,5,1 "/>
-                    </Grid>
-                </Border>
+                        </Grid>
+                    </Border>
+                </Grid>
             </Grid>
-        </Grid>
 
-        <!--Список друзей-->
-        <Grid x:Name="FriendWindow"
+            <!--Список друзей-->
+            <Grid x:Name="FriendWindow"
               Grid.Row="1"
               HorizontalAlignment="Center"
               VerticalAlignment="Center"
               Visibility="Hidden"
               Panel.ZIndex="1"
               Background="Transparent">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MaxWidth="300"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="300"
                                   MinWidth="0">
-                </ColumnDefinition>
-                <ColumnDefinition MinWidth="450">
-                </ColumnDefinition>
-                <ColumnDefinition MaxWidth="300"
+                    </ColumnDefinition>
+                    <ColumnDefinition MinWidth="450">
+                    </ColumnDefinition>
+                    <ColumnDefinition MaxWidth="300"
                                   MinWidth="0">
-                </ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition MinHeight="370"></RowDefinition>
-            </Grid.RowDefinitions>
+                    </ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition MinHeight="370"></RowDefinition>
+                </Grid.RowDefinitions>
 
-            <Border Background="{StaticResource BackgroundColor}"
+                <Border Background="{StaticResource BackgroundColor}"
                     Grid.Column="1"
                     CornerRadius="10"
                     Grid.Row="0"/>
 
-            <!--Список моих друзей-->
-            <ListBox x:Name="Friend_List" 
+                <!--Список моих друзей-->
+                <ListBox x:Name="Friend_List" 
                  Cursor="Hand" 
                  Background="Transparent" 
                  BorderBrush="Transparent" 
@@ -490,50 +418,50 @@
                  Grid.Row="0"
                      VerticalAlignment="Center"
                      Height="350">
-                <ListBox.ItemContainerStyle>
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <StackPanel Orientation="Vertical">
-                                        <Grid HorizontalAlignment="Stretch">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="370">
-                                                </ColumnDefinition>
-                                                <ColumnDefinition MaxWidth="30"
+                    <ListBox.ItemContainerStyle>
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <StackPanel Orientation="Vertical">
+                                            <Grid HorizontalAlignment="Stretch">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="370">
+                                                    </ColumnDefinition>
+                                                    <ColumnDefinition MaxWidth="30"
                                                                   MinWidth="30"
                                                                   Width="30">
-                                                </ColumnDefinition>
-                                                <ColumnDefinition MaxWidth="30"
+                                                    </ColumnDefinition>
+                                                    <ColumnDefinition MaxWidth="30"
                                                                   MinWidth="30"
                                                                   Width="30">
-                                                </ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="30">
-                                                </RowDefinition>
-                                                <RowDefinition Height="5">
-                                                </RowDefinition>
-                                            </Grid.RowDefinitions>
-                                            <Border CornerRadius="10" 
+                                                    </ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="30">
+                                                    </RowDefinition>
+                                                    <RowDefinition Height="5">
+                                                    </RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Border CornerRadius="10" 
                                                     Background="{StaticResource IsMouseOverColor}" 
                                                     HorizontalAlignment="Stretch"
                                                     Grid.Row="0"
                                                     Grid.Column="0">
-                                                <Grid>
-                                                    <Grid.RowDefinitions>
-                                                        <RowDefinition></RowDefinition>
-                                                        <RowDefinition></RowDefinition>
-                                                    </Grid.RowDefinitions>
-                                                    <Grid.ColumnDefinitions>
-                                                        <ColumnDefinition Width="45"></ColumnDefinition>
-                                                        <ColumnDefinition></ColumnDefinition>
-                                                    </Grid.ColumnDefinitions>
-                                                    <Image Grid.Column="0"
+                                                    <Grid>
+                                                        <Grid.RowDefinitions>
+                                                            <RowDefinition></RowDefinition>
+                                                            <RowDefinition></RowDefinition>
+                                                        </Grid.RowDefinitions>
+                                                        <Grid.ColumnDefinitions>
+                                                            <ColumnDefinition Width="45"></ColumnDefinition>
+                                                            <ColumnDefinition></ColumnDefinition>
+                                                        </Grid.ColumnDefinitions>
+                                                        <Image Grid.Column="0"
                                                            Grid.RowSpan="2"
                                                            Source="/Users.ico"
                                                            Margin="5,0"/>
-                                                    <TextBlock Text="{Binding Name}" 
+                                                        <TextBlock Text="{Binding Name}" 
                                                                    Background="Transparent" 
                                                                    HorizontalAlignment="Center" 
                                                                    VerticalAlignment="Center"
@@ -544,7 +472,7 @@
                                                                    ToolTip="Пользователь"
                                                                    Grid.Row="0"
                                                                    Grid.Column="1"/>
-                                                    <TextBlock Text="{Binding Nickname}"
+                                                        <TextBlock Text="{Binding Nickname}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"
                                                                Foreground="#FF424242"
@@ -553,10 +481,10 @@
                                                                TextWrapping="Wrap"
                                                                Grid.Row="1"
                                                                Grid.Column="1">
-                                                    </TextBlock>
-                                                </Grid>
-                                            </Border>
-                                            <Button x:Name="Writing" 
+                                                        </TextBlock>
+                                                    </Grid>
+                                                </Border>
+                                                <Button x:Name="Writing" 
                                                     Style="{StaticResource ButtonStyleICO}"
                                                     local:ButtonImage.Image="Icons\Write.ico"
                                                     Height="30"
@@ -567,7 +495,7 @@
                                                     Grid.Row="0"
                                                     Grid.Column="1"
                                                     HorizontalAlignment="Right"/>
-                                            <Button x:Name="DeleteFromFriend" 
+                                                <Button x:Name="DeleteFromFriend" 
                                                     Style="{StaticResource ButtonStyleICO}"
                                                     local:ButtonImage.Image="Icons\Delete.ico"
                                                     Height="30"
@@ -578,37 +506,37 @@
                                                     Grid.Row="0"
                                                     Grid.Column="2"
                                                     HorizontalAlignment="Right"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
-        </Grid>
+                                            </Grid>
+                                        </StackPanel>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
+            </Grid>
 
-        <!--Главное окно с чатами и активным диалогом-->
-        <Grid Grid.Row="1"
+            <!--Главное окно с чатами и активным диалогом-->
+            <Grid Grid.Row="1"
               Panel.ZIndex="0"
               Background="{StaticResource BackgroundColor}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition MinWidth="600">
-                </ColumnDefinition>
-                <ColumnDefinition MinWidth="270"
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MinWidth="600">
+                    </ColumnDefinition>
+                    <ColumnDefinition MinWidth="270"
                                   MaxWidth="400"
                                   Width="270">
-                </ColumnDefinition>
-            </Grid.ColumnDefinitions>
-            <Grid.RowDefinitions>
-                <RowDefinition>
-                </RowDefinition>
-                <RowDefinition MaxHeight="80">
-                </RowDefinition>
-            </Grid.RowDefinitions>
+                    </ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition>
+                    </RowDefinition>
+                    <RowDefinition MaxHeight="80">
+                    </RowDefinition>
+                </Grid.RowDefinitions>
 
-            <!--Список сообщений из определённого диалога-->
-            <ListBox x:Name="Message_List"   
+                <!--Список сообщений из определённого диалога-->
+                <ListBox x:Name="Message_List"   
                  Background="#FF1B1B1B" 
                  Foreground="{DynamicResource TextColor1}" 
                  BorderBrush="Transparent"
@@ -618,28 +546,28 @@
                  Opacity="0.7"
                  Grid.Column="0"
                  Grid.Row="0">
-                <ListBox.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <VirtualizingStackPanel VerticalAlignment="Bottom"/>
-                    </ItemsPanelTemplate>
-                </ListBox.ItemsPanel>
-                <ListBox.ItemTemplate>
-                    <DataTemplate>
-                        <StackPanel   VerticalAlignment="Bottom" 
+                    <ListBox.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                        </ItemsPanelTemplate>
+                    </ListBox.ItemsPanel>
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <StackPanel   VerticalAlignment="Bottom" 
                                       Orientation="Horizontal">
-                            <Grid>
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition></ColumnDefinition>
-                                    <ColumnDefinition Width="30"></ColumnDefinition>
-                                    <ColumnDefinition Width="78"></ColumnDefinition>
-                                </Grid.ColumnDefinitions>
-                                <Border CornerRadius="5" 
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition></ColumnDefinition>
+                                        <ColumnDefinition Width="30"></ColumnDefinition>
+                                        <ColumnDefinition Width="78"></ColumnDefinition>
+                                    </Grid.ColumnDefinitions>
+                                    <Border CornerRadius="5" 
                                         Background="{Binding backGround}" 
                                         BorderBrush="{Binding borderBrush}" 
                                         BorderThickness="0"
                                         Height="Auto"
                                         Grid.Column="0">
-                                    <TextBlock x:Name="Message" 
+                                        <TextBlock x:Name="Message" 
                                                Text="{Binding Message_Text}" 
                                                Background="Transparent"
                                                Foreground="Black"
@@ -650,8 +578,8 @@
                                                TextWrapping="Wrap"
                                                MaxWidth="500"
                                                Margin="2,2,2,2"/>
-                                </Border>
-                                <Button x:Name="DeleteMessage"
+                                    </Border>
+                                    <Button x:Name="DeleteMessage"
                                         Style="{StaticResource ButtonStyleICO}"
                                        Background="Transparent"
                                        local:ButtonImage.Image="Icons/Trash.ico"
@@ -665,21 +593,21 @@
                                        HorizontalContentAlignment="Right"
                                         VerticalAlignment="Center"
                                         Margin="2,2,2,2"/>
-                                <Label Content="{Binding Message_Date}"
+                                    <Label Content="{Binding Message_Date}"
                                        FontSize="8"
                                        FontFamily="Palatino Linotype"
                                        Foreground="Gray"
                                        Grid.Column="2"
                                        HorizontalContentAlignment="Center"
                                        VerticalAlignment="Bottom"/>
-                            </Grid>
-                        </StackPanel>
-                    </DataTemplate>
-                </ListBox.ItemTemplate>
-            </ListBox>
+                                </Grid>
+                            </StackPanel>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
 
-            <!--Список чатов-->
-            <ListBox x:Name="Chat_list" 
+                <!--Список чатов-->
+                <ListBox x:Name="Chat_list" 
                     Cursor="Hand" 
                     Background="{StaticResource BackgroundColor2}" 
                     Foreground="{DynamicResource TextColor1}" 
@@ -688,40 +616,40 @@
                     MouseDoubleClick="Chat_list_MouseDoubleClick"
                     ToolTip="Список ваших чатов" 
                     Opacity="0.7"
-                    Grid.RowSpan="2"
+                    Grid.RowSpan="1"
                     Grid.Column="1"
                      HorizontalContentAlignment="Stretch">
-                <ListBox.ItemContainerStyle>
-                    <!--Шаблон для TextBox'а в списке чатов-->
-                    <Style TargetType="ListBoxItem">
-                        <Setter Property="Background" Value="{StaticResource BackgroundButton}"/>
-                        <Setter Property="Foreground" Value="{StaticResource TextColor1}"/>
-                        <Setter Property="Template">
-                            <Setter.Value>
-                                <ControlTemplate>
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition MaxWidth="40">
-                                            </ColumnDefinition>
-                                            <ColumnDefinition></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-                                        <Grid.RowDefinitions>
-                                            <RowDefinition Height="40"></RowDefinition>
-                                            <RowDefinition Height="5"></RowDefinition>
-                                        </Grid.RowDefinitions>
-                                        <Border    CornerRadius="5" 
+                    <ListBox.ItemContainerStyle>
+                        <!--Шаблон для TextBox'а в списке чатов-->
+                        <Style TargetType="ListBoxItem">
+                            <Setter Property="Background" Value="{StaticResource BackgroundButton}"/>
+                            <Setter Property="Foreground" Value="{StaticResource TextColor1}"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition MaxWidth="40">
+                                                </ColumnDefinition>
+                                                <ColumnDefinition></ColumnDefinition>
+                                            </Grid.ColumnDefinitions>
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="40"></RowDefinition>
+                                                <RowDefinition Height="5"></RowDefinition>
+                                            </Grid.RowDefinitions>
+                                            <Border    CornerRadius="5" 
                                                    Background="{TemplateBinding Button.Background}" 
                                                    Grid.ColumnSpan="2"
                                                    Grid.Row="0">
-                                        </Border>
-                                        <Image     Source="Icons/Dialog.ico"
+                                            </Border>
+                                            <Image     Source="Icons/Dialog.ico"
                                                    Grid.Column="0"
                                                    Grid.Row="0"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Height="20"
                                                       Width="20"/>
-                                        <TextBlock Text="{Binding Name}"  
+                                            <TextBlock Text="{Binding Name}"  
                                                    FontSize="14"
                                                    Foreground="{TemplateBinding Button.Foreground}"
                                                    FontFamily="Palatino Linotype"
@@ -730,30 +658,30 @@
                                                    Grid.Row="0"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"/>
-                                    </Grid>
-                                    <ControlTemplate.Triggers>
-                                        <Trigger Property="IsMouseOver" Value="True">
-                                            <Setter Property="Background" Value="{StaticResource IsMouseOverColor}"/>
-                                            <Setter Property="Foreground" Value="Black"/>
-                                        </Trigger>
-                                    </ControlTemplate.Triggers>
-                                </ControlTemplate>
-                            </Setter.Value>
-                        </Setter>
-                    </Style>
-                </ListBox.ItemContainerStyle>
-            </ListBox>
+                                        </Grid>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter Property="Background" Value="{StaticResource IsMouseOverColor}"/>
+                                                <Setter Property="Foreground" Value="Black"/>
+                                            </Trigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListBox.ItemContainerStyle>
+                </ListBox>
 
-            <Grid Grid.Row="1"
+                <Grid Grid.Row="1"
                   Grid.Column="0">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition></ColumnDefinition>
-                    <ColumnDefinition MaxWidth="100">
-                    </ColumnDefinition>
-                </Grid.ColumnDefinitions>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition></ColumnDefinition>
+                        <ColumnDefinition MaxWidth="100">
+                        </ColumnDefinition>
+                    </Grid.ColumnDefinitions>
 
-                <!--Поле для ввода и отправки сообщения-->
-                <TextBox x:Name="TextBox_Message" 
+                    <!--Поле для ввода и отправки сообщения-->
+                    <TextBox x:Name="TextBox_Message" 
                         Style="{StaticResource TextBoxStyle}" 
                         TextWrapping="Wrap" 
                         ToolTip="Поле для ввода сообщения"
@@ -761,8 +689,8 @@
                          Margin="5,0"
                          KeyDown="Send_Message_Enter"/>
 
-                <!--Кнопка отправки сообщения-->
-                <Button x:Name="Send_Message" 
+                    <!--Кнопка отправки сообщения-->
+                    <Button x:Name="Send_Message" 
                         Style="{StaticResource ButtonStyle}" 
                         Content="Отправить" 
                         Height="35"
@@ -772,15 +700,70 @@
                         Click="Send_Message_Click"
                         ToolTip="Отправить собщение"
                         Grid.Column="1"/>
+                </Grid>
+
+                <Grid Grid.Row="1"
+                  Grid.Column="1">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition>
+                        </ColumnDefinition>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock x:Name="Demon_Connect" Text="Demon is connected" Grid.ColumnSpan="2" Grid.Row="0"/>
+                    <TextBlock x:Name="Server_Connect" Text="Server is connected" Grid.ColumnSpan="2" Grid.Row="1"/>
+                </Grid>
             </Grid>
+
+
         </Grid>
 
-        <Grid Grid.Row="1"
+        <!--Личный профиль юзера-->
+        <Grid x:Name="Profile"
+              Grid.Column="0"
+              Grid.Row="0"
               Visibility="Hidden">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition>
-                </ColumnDefinition>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
             </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <!--<Image
+                x:Name="Image_User"
+                Grid.Column="1"
+                Grid.Row="0"
+                Height="200"
+                Width="200"
+                Source="Icons/Users.ico">
+            </Image>-->
+            <Button Height="220"
+                    Width="220"
+                    Style="{StaticResource ButtonIcon}"
+                    local:ButtonImage.Image="Icons/Users.ico">
+
+            </Button>
+            <Button x:Name="ok"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    Style="{DynamicResource ButtonStyle}"
+                    Height="30"
+                    Width="100">
+
+            </Button>
+            <Button x:Name="fuck"
+                    Grid.Column="2"
+                    Grid.Row="1"
+                    Style="{DynamicResource ButtonStyle}"
+                    Height="30"
+                    Width="100">
+
+            </Button>
         </Grid>
     </Grid>
 </Window>
