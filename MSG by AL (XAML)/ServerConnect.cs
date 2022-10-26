@@ -33,8 +33,7 @@ namespace MSG_by_AL__XAML_
 
                 //Определяем объект сокета, для подключения к серверу по удаленной конечной точке
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-
-
+                socket.SetIPProtectionLevel(IPProtectionLevel.Unrestricted);
                 //Подключаемся к удаленному хосту
                 socket.Connect(ipPoint);
                 byte[] data = Encoding.Unicode.GetBytes(numberCommand + parameters);

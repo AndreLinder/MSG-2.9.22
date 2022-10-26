@@ -28,9 +28,6 @@ namespace MSG_by_AL__XAML_
         //ID активного пользователя
         public static int IDuser = -1;
 
-        //Создание объекта подключения к БД
-        MySqlConnection connection = DBUtils.GetDBConnection();
-
         public MainWindow()
         {
             InitializeComponent();
@@ -39,7 +36,6 @@ namespace MSG_by_AL__XAML_
         //Авторизация пользователя
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            
             List<string> values = ServerConnect.RecieveDataFromDB("01#", login_txt.Text + "~" + password_txt.Password);
             if (values[0] != "ERROR")
             {
@@ -51,7 +47,7 @@ namespace MSG_by_AL__XAML_
                     MessageBox.Show("Авторизация прошла успешно!", "Success", MessageBoxButton.OK, MessageBoxImage.Asterisk);
                     //SuccessSignIn();
                     //Открываем основное окно и передаём в него сведения об авторизованном пользователе
-                    ChatsPage chatpage = new ChatsPage(IDuser, NickName);
+                    ChatsPage chatpage = new ChatsPage(IDuser, NickName, values[3]);
                     chatpage.Show();
                     this.Close();
                 }

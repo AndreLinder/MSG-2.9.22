@@ -28,8 +28,7 @@
             <Grid.RowDefinitions>
                 <RowDefinition x:Name="MenuGrid"
                               MinHeight="20"
-                              MaxHeight="40"
-                               Height="20">
+                              MaxHeight="33" Height="*">
                 </RowDefinition>
                 <RowDefinition   x:Name="MainGrid" Height="*">
                 </RowDefinition>
@@ -149,32 +148,38 @@
                     local:ButtonImage.Image="Icons/Search.ico"
                     Content="Поиск пользователей"
                     Grid.Column="0"
+                        Height="20"
+                        VerticalAlignment="Top"
                     HorizontalAlignment="Stretch"
                     Click="Show_Search_Menu"
                     MouseEnter="Show_Hidden_Menu"
-                    MouseLeave="Show_Hidden_Menu">
+                    MouseLeave="Show_Hidden_Menu"
+                        >
                 </Button>
 
                 <!--Кнопка "Открыть список диалогов"-->
                 <Button Style="{StaticResource ButtonStyleMenu}"
                     local:ButtonImage.Image="Icons/Profile.ico"
                     Content="Мои диалоги"
+                        Height="20"
                     Grid.Column="1" 
                     HorizontalAlignment="Stretch"
                     Click="Open_Profile"
                     MouseEnter="Show_Hidden_Menu"
-                    MouseLeave="Show_Hidden_Menu">
+                    MouseLeave="Show_Hidden_Menu"
+                        VerticalAlignment="Top">
                 </Button>
 
                 <!--Кнопка "Мои друзья"-->
                 <Button Style="{StaticResource ButtonStyleMenu}"
                     local:ButtonImage.Image="Icons/Users.ico"
-                        Visibility="Visible"
                     Content="Мои друзья"
                     Grid.Column="2"
                     Click="FriendList_Show_Hidden"
                     MouseEnter="Show_Hidden_Menu"
-                    MouseLeave="Show_Hidden_Menu">
+                    MouseLeave="Show_Hidden_Menu"
+                        Height="20"
+                        VerticalAlignment="Top">
                 </Button>
 
                 <!--Кнопка "О приложении"-->
@@ -183,7 +188,9 @@
                     Content="О приложении"
                     Grid.Column="3"
                     MouseEnter="Show_Hidden_Menu"
-                    MouseLeave="Show_Hidden_Menu">
+                    MouseLeave="Show_Hidden_Menu"
+                        Height="20"
+                        VerticalAlignment="Top">
                 </Button>
 
                 <!--Кнопка "выйти"-->
@@ -193,7 +200,9 @@
                     Content="Выйти"
                     Click="Exit_Account"
                     MouseEnter="Show_Hidden_Menu"
-                    MouseLeave="Show_Hidden_Menu">
+                    MouseLeave="Show_Hidden_Menu"
+                        Height="20"
+                        VerticalAlignment="Top">
                 </Button>
             </Grid>
 

@@ -29,7 +29,7 @@
     <MapFileExtensions>true</MapFileExtensions>
     <ProductName>MGG BY AL</ProductName>
     <PublisherName>Andre Linder</PublisherName>
-    <ApplicationRevision>11</ApplicationRevision>
+    <ApplicationRevision>12</ApplicationRevision>
     <ApplicationVersion>2.0.4.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
@@ -132,6 +132,7 @@
     <Compile Include="ChatsPage.xaml.cs">
       <DependentUpon>ChatsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Resource\AES256.cs" />
     <Compile Include="Resource\ButtonImage.cs" />
     <Compile Include="Resource\Chat_List.cs" />
     <Compile Include="Resource\DBMySQLUtils.cs" />

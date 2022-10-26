@@ -25,5 +25,8 @@ namespace MSG_by_AL__XAML_.Resource
 
         //Никнейм пользователя (просто нужен)
         public string Nickname { get; set; }
+
+        //GUID определенного диалога
+        public string GUID { get; set; }
     }
 }
