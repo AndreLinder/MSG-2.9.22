@@ -70,6 +70,11 @@ namespace MSG_by_AL__XAML_
                 //Выводим сообщения об возникшем исключении
                 MessageBox.Show(ex.Message);
             }
+            catch (SocketException ex)
+            {
+                values[0] = "ERROR";
+                return values;
+            }
             //Возвращаем список значений для дальнейших действий
             return values;
         }

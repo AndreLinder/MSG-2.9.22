@@ -16,6 +16,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using MySql.Data.MySqlClient;
 using ConnectionDB;
+using System.Security.Cryptography;
 
 namespace MSG_by_AL__XAML_
 {
@@ -24,6 +25,9 @@ namespace MSG_by_AL__XAML_
 
         //Имя активного пользователя
         public static string NickName = "null";
+
+        //Объект для вычисления хэша
+        MD5 md5 = MD5.Create();
 
         //ID активного пользователя
         public static int IDuser = -1;
@@ -36,43 +40,41 @@ namespace MSG_by_AL__XAML_
         //Авторизация пользователя
         private void Login_Click(object sender, RoutedEventArgs e)
         {
-            List<string> values = ServerConnect.RecieveDataFromDB("01#", login_txt.Text + "~" + password_txt.Password);
-            if (values[0] != "ERROR")
+            byte[] hash_password = md5.ComputeHash(Encoding.UTF8.GetBytes(password_txt.Password));
+            try
             {
-                if (password_txt.Password == values[2] && login_txt.Text == values[1])
+                List<string> values = ServerConnect.RecieveDataFromDB("01#", login_txt.Text + "~" + Encoding.UTF8.GetString(hash_password));
+                if (values[0] != "ERROR")
                 {
-                    NickName = login_txt.Text;
-                    IDuser = int.Parse(values[0]);
-                    NickName = values[1];
-                    MessageBox.Show("Авторизация прошла успешно!", "Success", MessageBoxButton.OK, MessageBoxImage.Asterisk);
-                    //SuccessSignIn();
-                    //Открываем основное окно и передаём в него сведения об авторизованном пользователе
-                    ChatsPage chatpage = new ChatsPage(IDuser, NickName, values[3]);
-                    chatpage.Show();
-                    this.Close();
+                    if (Encoding.UTF8.GetString(hash_password) == values[2] & login_txt.Text == values[1])
+                    {
+                        NickName = login_txt.Text;
+                        IDuser = int.Parse(values[0]);
+                        NickName = values[1];
+                        //Открываем основное окно и передаём в него сведения об авторизованном пользователе
+                        ChatsPage chatpage = new ChatsPage(IDuser, NickName, values[3]);
+                        chatpage.Show();
+                        this.Close();
+                    }
+                    else
+                    {
+                        Notification_Text.Text = "Неверный логин или пароль!";
+                        Pop_Up_Notification();
+                    }
                 }
                 else
                 {
-                    Notification_Text.Text = "Неверный логин или пароль!";
+                    Notification_Text.Text = "Нет соединения с сервером!";
                     Pop_Up_Notification();
                 }
             }
-            else
+            catch(Exception ex)
             {
-                Notification_Text.Text = "Неверный логин или пароль!";
+                MessageBox.Show(ex.Message);  
+                Notification_Text.Text = "Нет соединения с сервером!";
                 Pop_Up_Notification();
             }
         }
-
-        //Сопутствующие методы
-        //public void SuccessSignIn()
-        //{
-        //    ThicknessAnimation notification = new ThicknessAnimation();
-        //    notification.From = notificationPopUp.Margin;
-        //    notification.To = new Thickness(0, 25, 0, 0);
-        //    notification.Duration = TimeSpan.FromSeconds(1);
-        //    notificationPopUp.BeginAnimation(TextBox.MarginProperty, notification);
-        //}
 
         //Открываем окно регистрации пользователя
         private void SignUp_Click(object sender, RoutedEventArgs e)

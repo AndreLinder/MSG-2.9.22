@@ -33,6 +33,12 @@
             <RowDefinition MaxHeight="45"
                            MinHeight="45">
             </RowDefinition>
+            <RowDefinition MaxHeight="25"
+                           MinHeight="25">
+            </RowDefinition>
+            <RowDefinition MaxHeight="45"
+                           MinHeight="45">
+            </RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <PasswordBox x:Name="password_text" 
@@ -46,7 +52,21 @@
                      VerticalAlignment="Center"
                      Grid.Row="6" 
                      Margin="71,10.8,70.4,10.6"
-                     MaxWidth="400"/>
+                     MaxWidth="400"
+                     TabIndex="2"/>
+        <PasswordBox x:Name="password_repeat" 
+                     Style="{StaticResource PasswordBoxStyle}"  
+                     BorderThickness="0"
+                     HorizontalContentAlignment="Center" 
+                     VerticalContentAlignment="Center" 
+                     FontSize="14" 
+                     Foreground="{StaticResource TextColor1}" 
+                     Height="25" 
+                     VerticalAlignment="Center"
+                     Grid.Row="8" 
+                     Margin="71,10.8,70.4,10.6"
+                     MaxWidth="400"
+                     TabIndex="3"/>
         <TextBox x:Name="name_text" 
                  Style="{StaticResource TextBoxStyle}" 
                  TextWrapping="Wrap" 
@@ -55,7 +75,9 @@
                  VerticalAlignment="Center"
                  Grid.Row="2" 
                  Margin="71,10.4,70.4,11"
-                 MaxWidth="400"/>
+                 MaxWidth="400"
+                 TabIndex="0"
+                 IsTabStop="True"/>
         <Label Content="Имя пользователя" 
                Style="{StaticResource LabelStyle}" 
                FontSize="14" 
@@ -71,7 +93,8 @@
                Width="65" 
                Height="20" 
                VerticalAlignment="Bottom"
-               Grid.Row="5"/>
+               Grid.Row="5"
+               IsTabStop="True"/>
         <Label Content="Регистрация" 
                Style="{StaticResource LabelStyle}" 
                FontSize="26" 
@@ -79,15 +102,26 @@
                Width="166" 
                Height="40" 
                VerticalAlignment="Bottom"
-               Grid.Row="0"/>
+               Grid.Row="0"
+               IsTabStop="True"/>
+        <Label Content="Повторите пароль" 
+               Style="{StaticResource LabelStyle}" 
+               FontSize="14" 
+               HorizontalAlignment="Center"  
+               Height="20" 
+               VerticalAlignment="Bottom"
+               Grid.Row="7"
+               IsTabStop="True"/>
+
         <Button Content="Зарегистрироваться" 
                 Style="{StaticResource ButtonStyle}" 
                 Click="SignUp_Click" 
                 Height="23" 
                 VerticalAlignment="Top"
-                Grid.Row="7"
+                Grid.Row="9"
                 MaxWidth="400" 
-                Margin="71,10,70.4,0"/>
+                Margin="71,10,70.4,0"
+                TabIndex="5"/>
         <Label Content="Логин" 
                Style="{StaticResource LabelStyle}" 
                FontSize="14" 
@@ -95,7 +129,8 @@
                VerticalAlignment="Bottom" 
                HorizontalAlignment="Center" 
                Width="50"
-               Grid.Row="3"/>
+               Grid.Row="3"
+               IsTabStop="True"/>
         <TextBox x:Name="login_text" 
                  Style="{StaticResource TextBoxStyle}" 
                  TextWrapping="Wrap" 
@@ -104,6 +139,7 @@
                  VerticalAlignment="Center"
                  Grid.Row="4" 
                  Margin="71,10.6,70.4,10.8"
-                 MaxWidth="400"/>
+                 MaxWidth="400"
+                 TabIndex="1"/>
     </Grid>
 </Window>

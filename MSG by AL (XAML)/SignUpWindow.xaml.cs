@@ -15,6 +15,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
+using System.Security.Cryptography;
 
 namespace MSG_by_AL__XAML_
 {
@@ -26,6 +27,9 @@ namespace MSG_by_AL__XAML_
         //Объект нашего соединения
         MySqlConnection connection = DBUtils.GetDBConnection();
 
+        //Объект хэширования пароля
+        MD5 md5 = MD5.Create();
+
         public SignUpWindow()
         {
             InitializeComponent();
@@ -35,14 +39,17 @@ namespace MSG_by_AL__XAML_
         private void SignUp_Click(object sender, RoutedEventArgs e)
         {
             //Отправляем запрос на сервер и получаем ответ
-            List<string> values = ServerConnect.RecieveDataFromDB("02#", name_text.Text + "~" + login_text.Text + "~" + password_text.Password);
-
-            if (values[0].Contains("CREATE NEW USER"))
+            if (password_repeat.Password == password_text.Password)
             {
-                MessageBox.Show("Пользователь успешно зарегистрирован!", "Success", MessageBoxButton.OK, MessageBoxImage.Asterisk);
-            }
-            else MessageBox.Show("Произошла ошибка");
+                List<string> values = ServerConnect.RecieveDataFromDB("02#", name_text.Text + "~" + login_text.Text + "~" + Encoding.UTF8.GetString(md5.ComputeHash(Encoding.UTF8.GetBytes(password_text.Password))));
 
+                if (values[0].Contains("CREATE NEW USER"))
+                {
+                    MessageBox.Show("Пользователь успешно зарегистрирован!", "Success", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                    SignUpWindow_Closing(sender, e);
+                }
+                else MessageBox.Show("Произошла ошибка");
+            }
         }
 
         //Действия при закрытии формы
