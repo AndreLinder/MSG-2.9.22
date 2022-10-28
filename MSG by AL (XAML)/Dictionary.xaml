@@ -6,8 +6,8 @@
     <LinearGradientBrush x:Key="FriendMessageColor" 
                          EndPoint="0.5,1" 
                          StartPoint="0.5,0">
-        <GradientStop Color="#FF0449EB" Offset="0"/>
-        <GradientStop Color="#FF6DBFF9" Offset="1"/>
+        <GradientStop Color="#FFA7A7A7" Offset="0"/>
+        <GradientStop Color="#FF33A8FA" Offset="1"/>
     </LinearGradientBrush>
     <LinearGradientBrush x:Key="MyMessageColor" 
                          EndPoint="0.5,1" 
@@ -15,6 +15,8 @@
         <GradientStop Color="#FFFF8900" Offset="0"/>
         <GradientStop Color="#FFFFDC00" Offset="1"/>
     </LinearGradientBrush>
+    
+    
 
     <!--Цвета заливки-->
     <LinearGradientBrush x:Key="BackgroundColor" 
@@ -247,18 +249,49 @@
             <Setter.Value>
                 <ControlTemplate>
                     <Grid>
-                        <Border Background="{TemplateBinding Button.Background}" 
-                                CornerRadius="22"/>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition></RowDefinition>
+                        </Grid.RowDefinitions>
+                        <Border Background="{TemplateBinding Button.Background}" CornerRadius="12"/>
+                        <Border x:Name="BorderHeight"
+                                CornerRadius="8"
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                Background="{StaticResource IsMouseOverColor}"
+                                Height="0"
+                                />
+                        <Border x:Name="BorderWidth"
+                                CornerRadius="8"
+                                Grid.Column="0"
+                                Grid.Row="0"
+                                Background="{StaticResource IsMouseOverColor}"
+                                Width="0"/>
                         <Image Source="{TemplateBinding local:ButtonImage.Image}"
-                               Height="20"
-                               Width="20"/>
+                               Height="12"
+                               Width="12"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"/>
                     </Grid>
                     <ControlTemplate.Triggers>
-                        <Trigger Property="IsMouseOver" Value="True">
-                            <Setter Property="Background" Value="{DynamicResource IsMouseOverColor}"/>
-                            <Setter Property="Foreground" Value="{DynamicResource TextColor2}"/>
-                        </Trigger>
-                        
+                        <EventTrigger RoutedEvent="Button.MouseEnter">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Height" From="0" To="15" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Width" From="0" To="15" Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
+                        <EventTrigger RoutedEvent="Button.MouseLeave">
+                            <BeginStoryboard>
+                                <Storyboard>
+                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Height" From="15" To="0" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Width" From="15" To="0" Duration="0:0:0.2"/>
+                                </Storyboard>
+                            </BeginStoryboard>
+                        </EventTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -514,7 +547,6 @@
     <!--Кнопка-иконка с анимацией-->
     <Style x:Key="ButtonIconAnimation" TargetType="Button">
         <Setter Property="Background" Value="{StaticResource IsMouseOverColor}"/>
-        <Setter Property="Foreground" Value="Black"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
@@ -525,16 +557,17 @@
                         <Grid.RowDefinitions>
                             <RowDefinition></RowDefinition>
                         </Grid.RowDefinitions>
-
+                        <Border Background="{TemplateBinding Button.Background}"
+                                CornerRadius="12"/>
                         <Border x:Name="BorderHeight"
-                                CornerRadius="20"
+                                CornerRadius="12"
                                 Grid.Column="0"
                                 Grid.Row="0"
                                 Background="{StaticResource IsMouseOverColor}"
                                 Height="0"
                                 />
                         <Border x:Name="BorderWidth"
-                                CornerRadius="20"
+                                CornerRadius="12"
                                 Grid.Column="0"
                                 Grid.Row="0"
                                 Background="{StaticResource IsMouseOverColor}"
@@ -542,29 +575,30 @@
                         <Label x:Name="TextIcon"
                                    Content="{TemplateBinding Button.Content}"
                                    Background="Transparent"
+                                    Foreground="{StaticResource TextColor1}"
                                    Grid.Column="0"
                                    Grid.Row="0"
                                    HorizontalAlignment="Center"
                                    VerticalAlignment="Center"
-                                   FontSize="20"
+                                   FontSize="{TemplateBinding Button.FontSize}"
                                    FontFamily="Palatino Linotype"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <EventTrigger RoutedEvent="Button.MouseEnter">
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Height" From="0" To="30" Duration="0:0:0.2"/>
-                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Width" From="0" To="30" Duration="0:0:0.2"/>
-                                    <ColorAnimation Storyboard.TargetName="TextIcon" Storyboard.TargetProperty="Foreground.Color" From="White" To="Black" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Height" From="0" To="28" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetName="BorderWidth" Storyboard.TargetProperty="Width" From="0" To="160" Duration="0:0:0.2"/>
+                                    <!--<ColorAnimation Storyboard.TargetName="TextIcon" Storyboard.TargetProperty="Foreground.Color" From="White" To="Black" Duration="0:0:0.2"/>-->
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>
                         <EventTrigger RoutedEvent="Button.MouseLeave">
                             <BeginStoryboard>
                                 <Storyboard>
-                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Height" From="30" To="0" Duration="0:0:0.2"/>
-                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Width" From="30" To="0" Duration="0:0:0.2"/>
-                                    <ColorAnimation Storyboard.TargetName="TextIcon" Storyboard.TargetProperty="Foreground.Color" From="Black" To="White" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetName="BorderHeight" Storyboard.TargetProperty="Height" From="28" To="0" Duration="0:0:0.2"/>
+                                    <DoubleAnimation Storyboard.TargetName="BorderWidth" Storyboard.TargetProperty="Width" From="160" To="0" Duration="0:0:0.2"/>
+                                    <!--<ColorAnimation Storyboard.TargetName="TextIcon" Storyboard.TargetProperty="Foreground.Color" From="Black" To="White" Duration="0:0:0.2"/>-->
                                 </Storyboard>
                             </BeginStoryboard>
                         </EventTrigger>

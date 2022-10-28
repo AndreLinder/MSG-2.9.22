@@ -20,6 +20,7 @@ using System.IO;
 using System.Net.Sockets;
 using System.Net;
 using System.Windows.Media.Media3D;
+using System.Security.Cryptography;
 
 namespace MSG_by_AL__XAML_
 {
@@ -37,6 +38,11 @@ namespace MSG_by_AL__XAML_
         //GuID авторизованного пользователя
         public string GuID = "null";
 
+        //Список потенциальных пользователей
+        List<User> users = new List<User>();
+
+        //Список пользователей с существующими чатами
+        List<User> users_chat = new List<User>();
 
         //ID, guid и никнейм собеседника
         public static int IDFriend = -1;
@@ -86,8 +92,10 @@ namespace MSG_by_AL__XAML_
                         foreach (List<string> value in list_notification)
                         {
                             AES256 aes = new AES256(value[2]);
+                            string msg = aes.Decode(value[1]);
+                            if (msg.Length > 40) msg = msg.Substring(0,40) + "...";
                             Dispatcher.Invoke(() => User_Name_Notification.Text = value[0]);
-                            Dispatcher.Invoke(() => Text_Message_Notification.Text = aes.Decode(value[1]));
+                            Dispatcher.Invoke(() => Text_Message_Notification.Text = msg);
                             Dispatcher.Invoke(() => SideNotificationShow());
                             System.Threading.Thread.Sleep(4000);
                             Dispatcher.Invoke(() => SideNotificationShow());
@@ -121,8 +129,14 @@ namespace MSG_by_AL__XAML_
                     list.ID = int.Parse(value[0]);
                     list.Name = value[1];
                     list.GUID = value[2];
-                    list.ID_Friend = int.Parse(value[3]);
+                    list.ID_Friend = int.Parse(value[4]);
                     Chat_list.Items.Add(list);
+
+                    User U = new User();
+                    U.ID = int.Parse(value[4]);
+                    U.Name = value[3];
+                    U.Nickname = "null";
+                    users_chat.Add(U);
                 }
             }
         }
@@ -145,80 +159,13 @@ namespace MSG_by_AL__XAML_
                     user.Name = value[1];
                     user.Nickname = value[2];
                     Friend_List.Items.Add(user);
+
+                    User U = new User();
+                    U.ID = int.Parse(value[0]);
+                    U.Name = value[1];
+                    U.Nickname = value[2];
+                    users.Add(U);
                 }
-            }
-        }
-
-        //Выгрузка сообщений(нужен ли?)
-        public void Loading_Messages(string SQL_Command)
-        {
-            try
-            {
-                //Открываем соединение
-                connection.Open();
-
-                //Запрос на выгрузку сообщений (максимум 100)
-                string sql_cmd = SQL_Command;
-
-                //Команда запроса
-                MySqlCommand cmd = connection.CreateCommand();
-                cmd.CommandText = sql_cmd;
-
-                //Добавляем параметры
-                MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                myID.Value = IDuser;
-                cmd.Parameters.Add(myID);
-
-                MySqlParameter friendID = new MySqlParameter("@IDFRIEND", MySqlDbType.Int32);
-                friendID.Value = IDFriend;
-                cmd.Parameters.Add(friendID);
-
-                MySqlParameter count_messages = new MySqlParameter("@COUNT", MySqlDbType.Int32);
-                count_messages.Value = MessageCount;
-                cmd.Parameters.Add(count_messages);
-
-                //Здесь прописывается логика отображения сообщений в окне дилога
-                //У "моих" сообщений и сообщений собеседника будет различное цветовое оформление 
-                using (DbDataReader reader = cmd.ExecuteReader())
-                {
-                    if (reader.HasRows)
-                    {
-                        while (reader.Read())
-                        {
-                            //
-                            if(int.Parse(reader.GetString(3)) == IDuser)
-                            {
-                                //Создадим объект привязки данных и определим свойства
-                                Message MSG = new Message();
-                                MSG.Message_ID = int.Parse(reader.GetString(0));
-                                MSG.Message_Text = reader.GetString(1);
-                                MSG.Message_Date = reader.GetString(2);
-                                MSG.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
-                                MSG.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
-                                Message_List.Items.Add(MSG);
-                            }
-                            if (int.Parse(reader.GetString(3)) == IDFriend)
-                            {
-                                Message MSG = new Message();
-                                MSG.Message_ID = int.Parse(reader.GetString(0));
-                                MSG.Message_Text = reader.GetString(1);
-                                MSG.Message_Date = reader.GetString(2);
-                                MSG.borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
-                                MSG.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
-                                Message_List.Items.Add(MSG);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                //Закрываем соединение
-                connection.Close();
             }
         }
 
@@ -282,18 +229,18 @@ namespace MSG_by_AL__XAML_
             }
         }
 
-        //Создание нового диалога с пользователем (доработать)
+        //Создание нового диалога с пользователем (12#)
         public bool CreateNewChat(int friendID, string friend_nick)
         {
             bool succesfull = false;
             try
             {
                 List<List<string>> values = ServerConnect.RecieveBigDataFromDB("12#", NickName + " : " + friend_nick + "~" + IDuser + "~" + friendID + "~");
-                if (values[0][0] != "OK") MessageBox.Show(values[0][0]);
+                GuID_Chat = values[0][1];
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
+                MessageBox.Show(ex.Message);
             }
             finally
             {
@@ -325,6 +272,13 @@ namespace MSG_by_AL__XAML_
                         user.Nickname = value[2];
                         User_List.Items.Add(user);
                         Friend_Nick = value[2];
+
+                        //Пополняем список потенциальных пользователей
+                        User U = new User();
+                        U.Nickname = value[2];
+                        U.Name = value[1];
+                        U.ID = int.Parse(value[0]);
+                        users.Add(U);
                     }
                 }
             }
@@ -348,6 +302,8 @@ namespace MSG_by_AL__XAML_
         {
             //Закрываем предыдущий диалог
             Dispatcher.Invoke(()=>Message_List.Items.Clear());
+            Hidden_Additional_Window();
+            Dispatcher.Invoke(() => Active_Friend.Content = Friend_Nick);
             AES256 aes = new AES256(GuID_Chat);
             try
             {
@@ -399,19 +355,19 @@ namespace MSG_by_AL__XAML_
         private void Sending_Message()
         {
             //Чтобы не отправлялись пустые сообщения
-            if (TextBox_Message.Text.Length != 0)
+            if ((TextBox_Message.Text.Length != 0) & GuID_Chat != "null")
             {
                 AES256 aes = new AES256(GuID_Chat);
 
                 List<List<string>> values = ServerConnect.RecieveBigDataFromDB("10#", IDuser + "~" + IDFriend + "~" + aes.Encode(TextBox_Message.Text) + "~");
 
-                if (values[0][0] == "SEND")
+                if (values[0][0] != "ERROR")
                 {
                     //Добавляем сообщение в диалог
                     //Нет возможности добавить ID для своего сообщения, т.к. его формирует БД
                     //Отправленное сообщение возможно не получится удалить, пока не перезайти в диалог
                     Message my_message = new Message();
-                    my_message.Message_ID = -1;
+                    my_message.Message_ID = int.Parse(values[0][0]);
                     my_message.Message_Text = TextBox_Message.Text;
                     my_message.Message_Date = DateTime.Now.ToString();
                     my_message.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
@@ -433,15 +389,78 @@ namespace MSG_by_AL__XAML_
                 List<List<string>> values = ServerConnect.RecieveBigDataFromDB("11#", IDuser + "~" + user.ID_Friend + "~" + user.Name + "~" + user.Nickname + "~");
 
                 //После успешного выполнения команды, будет дополнен список друзей
-                if (values[0][0] == "ОК") Friend_List.Items.Add(user);
+                if (values[0][0] == "OK")
+                {
+                    Friend_List.Items.Add(user);
+                    Pop_Up_Notification();
+                }
                 else MessageBox.Show(values[0][0]);
-
-
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
             }
+        }
+
+        //Удаление сообщения из диалога(13#)
+        private void DeleteMessage_Click(object sender, RoutedEventArgs e)
+        {
+            //Кнопка удаления сообщения, хранящее ID удаляемого сообщения
+            Button message = sender as Button;
+
+            int ID = int.Parse(message.Content.ToString());
+
+            try
+            {
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("13#", ID + "~");
+
+                if (values[0][0] == "MESSAGE_DELETE")
+                {
+                    AES256 aes = new AES256(GuID_Chat);
+                    List<List<string>> value = ServerConnect.RecieveBigDataFromDB("05#", IDuser + "~" + IDFriend);
+                    if (value[0][0] != "ERROR")
+                    {
+                        Message_List.Items.Clear();
+                        foreach (List<string> item in value)
+                        {
+                            if (int.Parse(item[3]) == IDuser)
+                            {
+                                //Создадим объект привязки данных и определим свойства
+                                Message MSG = new Message();
+                                MSG.Message_ID = int.Parse(item[0]);
+                                MSG.Message_Text = aes.Decode(item[1]);
+                                MSG.Message_Date = item[2];
+                                MSG.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
+                                MSG.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
+                                Message_List.Items.Add(MSG);
+                            }
+                            if (int.Parse(item[3]) == IDFriend)
+                            {
+                                Message MSG = new Message();
+                                MSG.Message_ID = int.Parse(item[0]);
+                                MSG.Message_Text = aes.Decode(item[1]);
+                                MSG.Message_Date = item[2];
+                                MSG.borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
+                                MSG.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
+                                Message_List.Items.Add(MSG);
+                            }
+                        }
+                        Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.Message);
+            }
+        }
+
+        //Вскрывает вспомогательные окна(не работает)
+        private void Hidden_Additional_Window()
+        {
+            Dispatcher.Invoke(()=>SearchWindow.Visibility = Visibility.Hidden);
+            Dispatcher.Invoke(()=>FriendWindow.Visibility = Visibility.Hidden);
+            Dispatcher.Invoke(()=>ButtonBlurEffect.Visibility = Visibility.Hidden);
         }
 
 
@@ -479,6 +498,7 @@ namespace MSG_by_AL__XAML_
         private async void Chat_list_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Chat_List item = (Chat_List)Dispatcher.Invoke(() => Chat_list.SelectedItem);
+            Friend_Nick = item.Name;
             GuID_Chat = item.GUID;
             if (IDFriend == item.ID_Friend)
             {
@@ -496,46 +516,19 @@ namespace MSG_by_AL__XAML_
         //Удаление пользователя из друзей
         private void DeleteFromFriend_Click(object sender, RoutedEventArgs e)
         {
+            Button btn = sender as Button;
             try
             {
-                Button btn = sender as Button;
-
-                //Открываем соединение
-                connection.Open();
-
-                //Получаем объект нашего пользователя (произойдёт только при выборе элемента сначала )
-                //значит нужно кнопку сделать недоступной, пока не выбирут его
-                Chat_List user = (Chat_List)Friend_List.SelectedItem;
-
-                //Строка запроса на удаление пользователя из друзей
-                string sql_cmd = "DELETE FROM server_chats.friend WHERE ID_User = @MYID AND ID_Friend = @IDFRIEND";
-
-                //Создаём команду запроса
-                MySqlCommand cmd = connection.CreateCommand();
-                cmd.CommandText = sql_cmd;
-
-                //Добавляем параметры
-                MySqlParameter myID = new MySqlParameter("@MYID", MySqlDbType.Int32);
-                myID.Value = IDuser;
-                cmd.Parameters.Add(myID);
-
-                MySqlParameter friendID = new MySqlParameter("@IDFRIEND", MySqlDbType.Int32);
-                friendID.Value = int.Parse(btn.Content.ToString());
-                cmd.Parameters.Add(friendID);
-
-                cmd.ExecuteNonQuery();
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("14#", IDuser + "~" + btn.Content.ToString() + '~');
+                if (values[0][0] == "USER_DELETED")
+                {
+                    //Обновляем список друзей
+                    Update_Friend_List();
+                }
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                //Закрываем соединение
-                connection.Close();
-
-                //Обновляем список друзей
-                Update_Friend_List();
+                System.Windows.MessageBox.Show(ex.Message);
             }
         }
 
@@ -548,51 +541,12 @@ namespace MSG_by_AL__XAML_
 
             //Стираем все данные о собеседнике
             IDFriend = int.Parse(Dispatcher.Invoke(() => btn.Content.ToString()));
-            //Friend_Nick = GetUserName(IDFriend);
-            if(CreateNewChat(IDFriend, Friend_Nick)!=true) await Task.Run(() => OpenChat(IDFriend));
+            Friend_Nick = ((User)users.Find(x => x.ID == IDFriend)).Name;
+            if((users_chat.Find(x=>x.ID == IDFriend)) == null) CreateNewChat(IDFriend, Friend_Nick);
+            await Task.Run(() => OpenChat(IDFriend));
         }
 
-        //Удаление сообщения из диалога
-        private void DeleteMessage_Click(object sender, RoutedEventArgs e)
-        {
-            //Кнопка удаления сообщения, хранящее ID удаляемого сообщения
-            Button message = sender as Button;
-            try
-            {
-                //Открываем соединение
-                connection.Open();
-
-                //Строка запроса
-                string sql_cmd = "DELETE FROM server_chats.messages WHERE ID = @IDMESSAGE;";
-
-                //Команда запроса
-                MySqlCommand cmd = connection.CreateCommand();
-                cmd.CommandText = sql_cmd;
-
-                //Добавляем параметры
-                MySqlParameter messageID = new MySqlParameter("@IDMESSAGE", MySqlDbType.Int32);
-                messageID.Value = message.Content.ToString();
-                cmd.Parameters.Add(messageID);
-
-                //Выполняем запрос
-                cmd.ExecuteNonQuery();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.ToString());
-            }
-            finally
-            {
-                //Закрываем соединение
-                connection.Close();
-                //Вызываем функцию загрузки сообщений
-                Message_List.Items.Clear();
-                if (MessageCount <= 1000) Loading_Messages("SELECT * FROM server_chats.messages WHERE (ID_Sender = @MYID AND ID_Reciever = @IDFRIEND) OR (ID_Sender = @IDFRIEND AND ID_Reciever = @MYID)");
-                else Loading_Messages("SELECT * FROM server_chats.messages WHERE (ID_Sender = @MYID AND ID_Reciever = @IDFRIEND) OR (ID_Sender = @IDFRIEND AND ID_Reciever = @MYID) LIMIT @COUNT-1000,@COUNT;");
-                Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
-
-            }
-        }
+       
 
         //Развернуть или свернуть меню
         private void Show_Hidden_Menu(object sender, System.Windows.Input.MouseEventArgs e)
@@ -687,29 +641,6 @@ namespace MSG_by_AL__XAML_
         private void Exit_Account(object sender, RoutedEventArgs e) 
         {
             this.Close();
-        }
-
-        private void Show_Hidden_Menu(object sender, RoutedEventArgs e)
-        {
-            //int height = int.Parse((Convert.ToString(MenuGrid.Height)));
-            ////Если свернуто, развернуть
-            //if (height == 20)
-            //{
-            //    var anim = new DoubleAnimation(20, (Duration)TimeSpan.FromSeconds(0.5));
-            //    anim.Completed += (s, _) => Menu_Exp = false;
-            //    Menu.BeginAnimation(ContentControl.HeightProperty, anim);
-            //    //    BigGrid.RowDefinitions[0].Height = new GridLength(40);
-            //    //    MenuShow.Height = 40;
-            //}
-            ////Иначе свернуть
-            //if (height == 40)
-            //{
-            //    var anim = new DoubleAnimation(40, (Duration)TimeSpan.FromSeconds(0.5));
-            //    anim.Completed += (s, _) => Menu_Exp = false;
-            //    Menu.BeginAnimation(ContentControl.HeightProperty, anim);
-            //    //BigGrid.RowDefinitions[0].Height = new GridLength(20);
-            //    //MenuShow.Height = 20;
-            //}
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

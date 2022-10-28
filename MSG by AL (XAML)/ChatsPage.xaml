@@ -108,7 +108,8 @@
                            FontFamily="Palatino Linotype"
                            FontSize="12"
                            TextWrapping="Wrap" Foreground="#FF221616"
-                           >
+                           Margin="-10,0"
+                               MaxWidth="160">
                     </TextBlock>
 
                 </Grid>
@@ -157,10 +158,10 @@
                         >
                 </Button>
 
-                <!--Кнопка "Открыть список диалогов"-->
+                <!--Кнопка "Мой профиль"-->
                 <Button Style="{StaticResource ButtonStyleMenu}"
                     local:ButtonImage.Image="Icons/Profile.ico"
-                    Content="Мои диалоги"
+                    Content="Мой профиль"
                         Height="20"
                     Grid.Column="1" 
                     HorizontalAlignment="Stretch"
@@ -435,28 +436,21 @@
                                         <StackPanel Orientation="Vertical">
                                             <Grid HorizontalAlignment="Stretch">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="370">
-                                                    </ColumnDefinition>
-                                                    <ColumnDefinition MaxWidth="30"
-                                                                  MinWidth="30"
-                                                                  Width="30">
-                                                    </ColumnDefinition>
-                                                    <ColumnDefinition MaxWidth="30"
-                                                                  MinWidth="30"
-                                                                  Width="30">
-                                                    </ColumnDefinition>
+                                                    <ColumnDefinition></ColumnDefinition>
+                                                    <ColumnDefinition Width="40"></ColumnDefinition>
+                                                    <ColumnDefinition Width="40"></ColumnDefinition>
                                                 </Grid.ColumnDefinitions>
                                                 <Grid.RowDefinitions>
-                                                    <RowDefinition Height="30">
-                                                    </RowDefinition>
-                                                    <RowDefinition Height="5">
-                                                    </RowDefinition>
+                                                    <RowDefinition Height="40"></RowDefinition>
+                                                    <RowDefinition Height="5"></RowDefinition>
                                                 </Grid.RowDefinitions>
-                                                <Border CornerRadius="10" 
-                                                    Background="{StaticResource IsMouseOverColor}" 
+                                                <Border x:Name="border"
+                                                    CornerRadius="15" 
+                                                    Background="{StaticResource BackgroundButton}" 
                                                     HorizontalAlignment="Stretch"
+                                                        Opacity="0.7"
                                                     Grid.Row="0"
-                                                    Grid.Column="0">
+                                                    Grid.ColumnSpan="3">
                                                     <Grid>
                                                         <Grid.RowDefinitions>
                                                             <RowDefinition></RowDefinition>
@@ -468,13 +462,13 @@
                                                         </Grid.ColumnDefinitions>
                                                         <Image Grid.Column="0"
                                                            Grid.RowSpan="2"
-                                                           Source="/Users.ico"
+                                                           Source="Icons/Profile.ico"
                                                            Margin="5,0"/>
                                                         <TextBlock Text="{Binding Name}" 
                                                                    Background="Transparent" 
                                                                    HorizontalAlignment="Center" 
                                                                    VerticalAlignment="Center"
-                                                                   Foreground="{StaticResource TextColor2}"
+                                                                   Foreground="{StaticResource TextColor1}"
                                                                    FontSize="14"
                                                                    FontFamily="Palatino Linotype"
                                                                    TextWrapping="Wrap"
@@ -484,7 +478,7 @@
                                                         <TextBlock Text="{Binding Nickname}"
                                                                HorizontalAlignment="Center"
                                                                VerticalAlignment="Center"
-                                                               Foreground="#FF424242"
+                                                               Foreground="{StaticResource IsMouseOverColor}"
                                                                FontSize="12"
                                                                FontFamily="Palatino Linotype"
                                                                TextWrapping="Wrap"
@@ -494,7 +488,7 @@
                                                     </Grid>
                                                 </Border>
                                                 <Button x:Name="Writing" 
-                                                    Style="{StaticResource ButtonStyleICO}"
+                                                    Style="{StaticResource ButtonStyleICO2}"
                                                     local:ButtonImage.Image="Icons\Write.ico"
                                                     Height="30"
                                                     Width="30"
@@ -505,7 +499,7 @@
                                                     Grid.Column="1"
                                                     HorizontalAlignment="Right"/>
                                                 <Button x:Name="DeleteFromFriend" 
-                                                    Style="{StaticResource ButtonStyleICO}"
+                                                    Style="{StaticResource ButtonStyleICO2}"
                                                     local:ButtonImage.Image="Icons\Delete.ico"
                                                     Height="30"
                                                     Width="30"
@@ -520,7 +514,7 @@
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
-                        </Style>
+                            </Style>
                     </ListBox.ItemContainerStyle>
                 </ListBox>
             </Grid>
@@ -543,40 +537,54 @@
                     <RowDefinition MaxHeight="80">
                     </RowDefinition>
                 </Grid.RowDefinitions>
-
-                <!--Список сообщений из определённого диалога-->
-                <ListBox x:Name="Message_List"   
-                 Background="#FF1B1B1B" 
-                 Foreground="{DynamicResource TextColor1}" 
-                 BorderBrush="Transparent"
-                 BorderThickness="5" 
-                 ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                 ToolTip="Текущий диалог" 
-                 Opacity="0.7"
-                 Grid.Column="0"
-                 Grid.Row="0">
-                    <ListBox.ItemsPanel>
-                        <ItemsPanelTemplate>
-                            <VirtualizingStackPanel VerticalAlignment="Bottom"/>
-                        </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.ItemTemplate>
-                        <DataTemplate>
-                            <StackPanel   VerticalAlignment="Bottom" 
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="20"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button x:Name="Active_Friend"
+                        Margin="10,0"
+                        HorizontalAlignment="Stretch"
+                        Style="{DynamicResource ButtonStyle}"
+                        Content="Нет активного диалога"
+                            Background="{DynamicResource BackgroundColor2}">
+                    </Button>
+                    <!--Список сообщений из определённого диалога-->
+                    <ListBox x:Name="Message_List"   
+                    Background="#FF1B1B1B" 
+                    Foreground="{DynamicResource TextColor1}" 
+                    BorderBrush="Transparent"
+                    BorderThickness="5" 
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ToolTip="Текущий диалог" 
+                    Opacity="0.7"
+                    Grid.Column="0"
+                    Grid.Row="1">
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel   VerticalAlignment="Bottom" 
                                       Orientation="Horizontal">
-                                <Grid>
-                                    <Grid.ColumnDefinitions>
-                                        <ColumnDefinition></ColumnDefinition>
-                                        <ColumnDefinition Width="30"></ColumnDefinition>
-                                        <ColumnDefinition Width="78"></ColumnDefinition>
-                                    </Grid.ColumnDefinitions>
-                                    <Border CornerRadius="5" 
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition Width="30"></ColumnDefinition>
+                                            <ColumnDefinition Width="78"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <Border CornerRadius="5" 
                                         Background="{Binding backGround}" 
                                         BorderBrush="{Binding borderBrush}" 
                                         BorderThickness="0"
                                         Height="Auto"
                                         Grid.Column="0">
-                                        <TextBlock x:Name="Message" 
+                                            <TextBlock x:Name="Message" 
                                                Text="{Binding Message_Text}" 
                                                Background="Transparent"
                                                Foreground="Black"
@@ -587,8 +595,8 @@
                                                TextWrapping="Wrap"
                                                MaxWidth="500"
                                                Margin="2,2,2,2"/>
-                                    </Border>
-                                    <Button x:Name="DeleteMessage"
+                                        </Border>
+                                        <Button x:Name="DeleteMessage"
                                         Style="{StaticResource ButtonStyleICO}"
                                        Background="Transparent"
                                        local:ButtonImage.Image="Icons/Trash.ico"
@@ -602,19 +610,19 @@
                                        HorizontalContentAlignment="Right"
                                         VerticalAlignment="Center"
                                         Margin="2,2,2,2"/>
-                                    <Label Content="{Binding Message_Date}"
+                                        <Label Content="{Binding Message_Date}"
                                        FontSize="8"
                                        FontFamily="Palatino Linotype"
                                        Foreground="Gray"
                                        Grid.Column="2"
                                        HorizontalContentAlignment="Center"
                                        VerticalAlignment="Bottom"/>
-                                </Grid>
-                            </StackPanel>
-                        </DataTemplate>
-                    </ListBox.ItemTemplate>
-                </ListBox>
-
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
+                </Grid>
                 <!--Список чатов-->
                 <ListBox x:Name="Chat_list" 
                     Cursor="Hand" 
@@ -733,46 +741,163 @@
         <Grid x:Name="Profile"
               Grid.Column="0"
               Grid.Row="0"
-              Visibility="Hidden">
+              Visibility="Hidden"
+              >
             <Grid.ColumnDefinitions>
+                <ColumnDefinition MaxWidth="350"/>
                 <ColumnDefinition/>
-                <ColumnDefinition/>
-                <ColumnDefinition/>
+                <ColumnDefinition MaxWidth="350"/>
             </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition/>
-                <RowDefinition/>
+                <RowDefinition MaxHeight="300" Height="*"/>
             </Grid.RowDefinitions>
-            <!--<Image
+            <Image
                 x:Name="Image_User"
-                Grid.Column="1"
+                Grid.Column="0"
                 Grid.Row="0"
                 Height="200"
                 Width="200"
-                Source="Icons/Users.ico">
-            </Image>-->
-            <Button Height="220"
-                    Width="220"
-                    Style="{StaticResource ButtonIcon}"
-                    local:ButtonImage.Image="Icons/Users.ico">
-
-            </Button>
-            <Button x:Name="ok"
-                    Grid.Column="1"
-                    Grid.Row="1"
-                    Style="{DynamicResource ButtonStyle}"
-                    Height="30"
-                    Width="100">
-
-            </Button>
-            <Button x:Name="fuck"
-                    Grid.Column="2"
-                    Grid.Row="1"
-                    Style="{DynamicResource ButtonStyle}"
-                    Height="30"
-                    Width="100">
-
-            </Button>
+                Source="Icons/BigProfile.ico">
+            </Image>
+            
+            <!--Изменение пароля-->
+            <Grid Grid.Row="1"
+                  Grid.Column="2">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Label Content="Текущий пароль:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="15"
+                       HorizontalAlignment="Center"
+                       Grid.Row="0"/>
+                <Label Content="Новый пароль:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="15"
+                       HorizontalAlignment="Center"
+                       Grid.Row="2"/>
+                <Label Content="Повторите пароль:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="15"
+                       HorizontalAlignment="Center"
+                       Grid.Row="4"/>
+                <PasswordBox x:Name="OldPassword"
+                             Style="{StaticResource PasswordBoxStyle}"
+                             Grid.Row="1"
+                             Height="28">
+                </PasswordBox>
+                <PasswordBox x:Name="NewPassword"
+                             Style="{StaticResource PasswordBoxStyle}"
+                             Grid.Row="3"
+                             Height="28">
+                </PasswordBox>
+                <PasswordBox x:Name="RepNewPassword"
+                             Style="{StaticResource PasswordBoxStyle}"
+                             Grid.Row="5"
+                             Height="28">
+                </PasswordBox>
+                <Button x:Name="Save_Password"
+                        Style="{StaticResource ButtonStyle}"
+                        Content="Сохранить"
+                        Grid.Row="6"
+                        Height="28">
+                </Button>
+            </Grid>
+            
+            <!--Информация о пользователе-->
+            <Grid Grid.Row="1"
+                  Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <Label Content="Имя пользователя:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="15"
+                       Grid.Row="0"
+                       Grid.ColumnSpan="2"
+                       HorizontalAlignment="Center"/>
+                <Label Content="Никнейм пользователя:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="15"
+                       Grid.Row="2"
+                       Grid.ColumnSpan="2"
+                       HorizontalAlignment="Center"/>
+                <Label Content="E-mail:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="15"
+                       Grid.Row="4"
+                       Grid.ColumnSpan="2"
+                       HorizontalAlignment="Center"/>
+                <Label Content="Телефон: "
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="15"
+                       Grid.Row="6"
+                       Grid.ColumnSpan="2"
+                       HorizontalAlignment="Center"/>
+                <TextBox x:Name="Name_User"
+                         Style="{StaticResource TextBoxStyle}"
+                         Grid.Row="1"
+                         Grid.Column="0"
+                         Height="28"
+                         Grid.ColumnSpan="2">
+                </TextBox>
+                <TextBox x:Name="Nick_User"
+                         Style="{StaticResource TextBoxStyle}"
+                         Grid.Row="3"
+                         Grid.ColumnSpan="2"
+                         Height="28">
+                </TextBox>
+                <TextBox x:Name="email_User"
+                         Style="{StaticResource TextBoxStyle}"
+                         Grid.Row="5"
+                         Grid.ColumnSpan="2"
+                         Height="28">
+                </TextBox>
+                <TextBox x:Name="Phone_User"
+                         Style="{StaticResource TextBoxStyle}"
+                         Grid.Row="7"
+                         Grid.ColumnSpan="2"
+                         Height="28">
+                </TextBox>
+                <Button x:Name="Save_Info"
+                        Grid.Row="8"
+                        Grid.Column="0"
+                        Style="{StaticResource ButtonStyle}"
+                        Content="Сохранить изменения"
+                        FontSize="15"
+                        MaxHeight="28"
+                        Margin="2,0,2,0"/>
+                <Button x:Name="Cancel_Edit"
+                        Grid.Row="8"
+                        Grid.Column="1"
+                        Style="{StaticResource ButtonStyle}"
+                        Content="Отменить изменения"
+                        FontSize="15"
+                        MaxHeight="28"
+                        Margin="2,0,2,0"/>
+            </Grid>
         </Grid>
     </Grid>
 </Window>

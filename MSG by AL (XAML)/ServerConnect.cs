@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Data.Common;
 using System.Collections.Generic;
 using System.Windows;
+using MySql.Data.MySqlClient;
 
 namespace MSG_by_AL__XAML_
 {
@@ -64,7 +65,7 @@ namespace MSG_by_AL__XAML_
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
                 //Выводим сообщения об возникшем исключении
                 MessageBox.Show(ex.Message);
@@ -124,10 +125,10 @@ namespace MSG_by_AL__XAML_
                     values.Add(list);
                 }
             }
-            catch (Exception ex)
+            catch (MySqlException ex)
             {
                 //Выводим сообщения об возникшем исключении
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.Number);
             }
             //Возвращаем список значений для дальнейших действий
             return values;

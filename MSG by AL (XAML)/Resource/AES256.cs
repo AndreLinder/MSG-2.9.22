@@ -12,7 +12,7 @@ namespace MSG_by_AL__XAML_.Resource
 {
     internal class AES256
     {
-
+        //Ключи шифрования
         byte[] key1 = new byte[16];
         byte[] key2 = new byte[16];
 
@@ -29,6 +29,7 @@ namespace MSG_by_AL__XAML_.Resource
             key2 = Encoding.UTF8.GetBytes(guid.Substring(guid.Length - 8, 8));
         }
 
+        //Метод шифрования данных
         public string Encode(string text)
         {
             try
@@ -49,12 +50,12 @@ namespace MSG_by_AL__XAML_.Resource
             }
         }
 
+        //Метод расшифровки данных
         public string Decode(string code)
         {
             try
             {
                 byte[] inputtextbyteArray = new byte[code.Replace(" ", "+").Length];
-                //This technique reverses base64 encoding when it is received over the Internet.
                 inputtextbyteArray = Convert.FromBase64String(code.Replace(" ", "+"));
                 using (DESCryptoServiceProvider dEsp = new DESCryptoServiceProvider())
                 {
