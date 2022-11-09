@@ -38,18 +38,22 @@ namespace MSG_by_AL__XAML_
         //Регистрация нового пользователя
         private void SignUp_Click(object sender, RoutedEventArgs e)
         {
-            //Отправляем запрос на сервер и получаем ответ
-            if (password_repeat.Password == password_text.Password)
+            if (login_text.Text.Length > 0 & name_text.Text.Length > 0 & password_text.Password.Length > 0 & password_repeat.Password.Length > 0)
             {
-                List<string> values = ServerConnect.RecieveDataFromDB("02#", name_text.Text + "~" + login_text.Text + "~" + Encoding.UTF8.GetString(md5.ComputeHash(Encoding.UTF8.GetBytes(password_text.Password))));
-
-                if (values[0].Contains("CREATE NEW USER"))
+                //Отправляем запрос на сервер и получаем ответ
+                if (password_repeat.Password == password_text.Password)
                 {
-                    MessageBox.Show("Пользователь успешно зарегистрирован!", "Success", MessageBoxButton.OK, MessageBoxImage.Asterisk);
-                    SignUpWindow_Closing(sender, e);
+                    List<string> values = ServerConnect.RecieveDataFromDB("02#", name_text.Text + "~" + login_text.Text + "~" + Encoding.UTF8.GetString(md5.ComputeHash(Encoding.UTF8.GetBytes(password_text.Password))));
+
+                    if (values[0].Contains("CREATE NEW USER"))
+                    {
+                        MessageBox.Show("Пользователь успешно зарегистрирован!", "Success", MessageBoxButton.OK, MessageBoxImage.Asterisk);
+                        this.Close();
+                    }
+                    else MessageBox.Show("Произошла ошибка");
                 }
-                else MessageBox.Show("Произошла ошибка");
             }
+            else MessageBox.Show("Заполните все поля!");
         }
 
         //Действия при закрытии формы

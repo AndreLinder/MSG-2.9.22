@@ -254,12 +254,10 @@ namespace MSG_by_AL__XAML_
                     {
                         //Создаём кастомизированный item для списка пользователей и добавляем ему свойства
                         Chat_List user = new Chat_List();
-                        IDFriend = int.Parse(value[0]);
                         user.Name = value[1];
-                        user.ID_Friend = IDFriend;
+                        user.ID_Friend = int.Parse(value[0]);
                         user.Nickname = value[2];
                         User_List.Items.Add(user);
-                        Friend_Nick = value[2];
 
                         //Пополняем список потенциальных пользователей
                         User U = new User();
@@ -372,7 +370,12 @@ namespace MSG_by_AL__XAML_
         {
             try
             {
-                Chat_List user = (Chat_List)User_List.Items[0];
+                Chat_List user = new Chat_List();
+                IDFriend = int.Parse(((Button)sender).Content.ToString());
+                foreach (Chat_List L in User_List.Items)
+                {
+                    if(L.ID_Friend == IDFriend) user = L;
+                }
 
                 List<List<string>> values = ServerConnect.RecieveBigDataFromDB("11#", IDuser + "~" + user.ID_Friend + "~" + user.Name + "~" + user.Nickname + "~");
 
