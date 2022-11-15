@@ -9,6 +9,7 @@ using System.Threading;
 using MySql.Data.MySqlClient;
 using ConnectionDB;
 using MSG_by_AL__XAML_.Resource;
+using Microsoft.Toolkit.Uwp.Notifications;
 
 namespace MSG_by_AL__XAML_
 {
@@ -31,6 +32,9 @@ namespace MSG_by_AL__XAML_
 
         //Список пользователей с существующими чатами
         List<User> users_chat = new List<User>();
+
+        //Список GUID чатов и ID пользователей для быстрого доступа к диалогу
+        List<Chat_List> chat_list = new List<Chat_List>();
 
         //ID, guid и никнейм собеседника
         public static int IDFriend = -1;
@@ -85,6 +89,12 @@ namespace MSG_by_AL__XAML_
                             Dispatcher.Invoke(() => User_Name_Notification.Text = value[0]);
                             Dispatcher.Invoke(() => Text_Message_Notification.Text = msg);
                             Dispatcher.Invoke(() => SideNotificationShow());
+                            new ToastContentBuilder()
+                                .AddArgument("action", "viewConversation")
+                                .AddArgument("conversationId", 9813)
+                                .AddText(value[0] + " sent new message")
+                                .AddText(msg)
+                                .Show();
                             System.Threading.Thread.Sleep(4000);
                             Dispatcher.Invoke(() => SideNotificationShow());
                             System.Threading.Thread.Sleep(1500);
@@ -98,6 +108,7 @@ namespace MSG_by_AL__XAML_
                     Dispatcher.Invoke(()=>Demon_Connect.Text = "Demon disconnected");
                 }
             }
+            
         }
 
         //Метод обновления списка чатов(#03)
@@ -125,6 +136,8 @@ namespace MSG_by_AL__XAML_
                     U.Name = value[3];
                     U.Nickname = "null";
                     users_chat.Add(U);
+
+                    chat_list.Add(list);
                 }
             }
         }
@@ -290,6 +303,7 @@ namespace MSG_by_AL__XAML_
             Dispatcher.Invoke(()=>Message_List.Items.Clear());
             Hidden_Additional_Window();
             Dispatcher.Invoke(() => Active_Friend.Content = Friend_Nick);
+            GuID_Chat = chat_list.Find(x => x.ID_Friend == friend_ID).GUID;
             AES256 aes = new AES256(GuID_Chat);
             try
             {
