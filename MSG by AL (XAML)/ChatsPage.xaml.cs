@@ -10,6 +10,7 @@ using MySql.Data.MySqlClient;
 using ConnectionDB;
 using MSG_by_AL__XAML_.Resource;
 using Microsoft.Toolkit.Uwp.Notifications;
+using Windows.UI.Xaml.Controls.Maps;
 
 namespace MSG_by_AL__XAML_
 {
@@ -78,7 +79,7 @@ namespace MSG_by_AL__XAML_
                 try
                 {
                     List<List<string>>  list_notification = ServerConnect.RecieveNotification(IDuser);
-                    Dispatcher.Invoke(()=>Demon_Connect.Text = "Demon connected");
+                    //Dispatcher.Invoke(()=>Demon_Connect.Text = "Demon connected");
                     if (list_notification[0][0] != "NONE")
                     {
                         foreach (List<string> value in list_notification)
@@ -105,7 +106,7 @@ namespace MSG_by_AL__XAML_
                 }
                 catch (Exception ex)
                 {
-                    Dispatcher.Invoke(()=>Demon_Connect.Text = "Demon disconnected");
+                    //Dispatcher.Invoke(()=>Demon_Connect.Text = "Demon disconnected");
                 }
             }
             
@@ -129,6 +130,7 @@ namespace MSG_by_AL__XAML_
                     list.Name = value[1];
                     list.GUID = value[2];
                     list.ID_Friend = int.Parse(value[4]);
+                    list.Public = false;
                     Chat_list.Items.Add(list);
 
                     User U = new User();
@@ -302,7 +304,7 @@ namespace MSG_by_AL__XAML_
             //Закрываем предыдущий диалог
             Dispatcher.Invoke(()=>Message_List.Items.Clear());
             Hidden_Additional_Window();
-            Dispatcher.Invoke(() => Active_Friend.Content = Friend_Nick);
+            Dispatcher.Invoke(() => Active_Friend.Content = users_chat.Find(x=>x.ID == friend_ID).Name);
             GuID_Chat = chat_list.Find(x => x.ID_Friend == friend_ID).GUID;
             AES256 aes = new AES256(GuID_Chat);
             try
@@ -397,13 +399,19 @@ namespace MSG_by_AL__XAML_
                 if (values[0][0] == "OK")
                 {
                     Friend_List.Items.Add(user);
+                    Notification_Text.Text = "Пользователь добавлен в контакты";
+                    Pop_Up_Notification();
+                }
+                else if (values[0][0] == "1062")
+                {
+                    Notification_Text.Text = "Пользователь уже добавлен";
                     Pop_Up_Notification();
                 }
                 else MessageBox.Show(values[0][0]);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(ex.Message);
+                MessageBox.Show(ex.Message + "\n" + ex.Message);
             }
         }
 
@@ -468,6 +476,12 @@ namespace MSG_by_AL__XAML_
             Dispatcher.Invoke(()=>ButtonBlurEffect.Visibility = Visibility.Hidden);
         }
 
+        //Тестовый метод открытия группового чата
+        private void Open_Group_Chat(int ID_Chat)
+        {
+
+        }
+
 
 
 
@@ -493,6 +507,21 @@ namespace MSG_by_AL__XAML_
 
         }
 
+        //Создание группового диалога
+        private void Create_Group_Chat(object sender, EventArgs e)
+        {
+            try
+            {
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("15#", Name + "~");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            //Тут должен запускаться метод обновления групповых диалогов
+
+        }
+
         //Отпрвака сообщения
         private void Send_Message_Click(object sender, RoutedEventArgs e)
         {
@@ -503,18 +532,26 @@ namespace MSG_by_AL__XAML_
         private async void Chat_list_MouseDoubleClick(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Chat_List item = (Chat_List)Dispatcher.Invoke(() => Chat_list.SelectedItem);
-            Friend_Nick = item.Name;
-            GuID_Chat = item.GUID;
-            if (IDFriend == item.ID_Friend)
+            if (!item.Public)
             {
-                Dispatcher.Invoke(() => Message_List.Items.Clear());
-                IDFriend = -1;
-                GuID_Chat = "null";
+                Friend_Nick = item.Name;
+                GuID_Chat = item.GUID;
+                if (IDFriend == item.ID_Friend)
+                {
+                    Dispatcher.Invoke(() => Message_List.Items.Clear());
+                    IDFriend = -1;
+                    GuID_Chat = "null";
+                }
+                else
+                {
+                    IDFriend = -1;
+                    await Task.Run(() => OpenChat(item.ID_Friend));
+                }
             }
             else
             {
-                IDFriend = -1;
-                await Task.Run(() => OpenChat(item.ID_Friend));
+                GuID_Chat = item.GUID;
+                Open_Group_Chat(item.ID);
             }
         }
 

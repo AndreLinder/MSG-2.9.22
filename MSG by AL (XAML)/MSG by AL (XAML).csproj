@@ -29,11 +29,13 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ProductName>MGG BY AL</ProductName>
+    <UpdateUrl>https://cloud.mail.ru/public/1ZW7/b5shdyreh/</UpdateUrl>
+    <ProductName>M.A.L.</ProductName>
     <PublisherName>Andre Linder</PublisherName>
+    <SuiteName>M.A.L.</SuiteName>
     <WebPage>publish.htm</WebPage>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>17</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>2.0.4.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>

@@ -623,6 +623,89 @@
                             </DataTemplate>
                         </ListBox.ItemTemplate>
                     </ListBox>
+
+                    <!--Список сообщений из шруппового диалога-->
+                    <ListBox x:Name="Message_Group_List"   
+                    Background="#FF1B1B1B" 
+                    Foreground="{DynamicResource TextColor1}" 
+                    BorderBrush="Transparent"
+                    BorderThickness="5" 
+                    ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                    ScrollViewer.VerticalScrollBarVisibility="Hidden"
+                    ToolTip="Текущий диалог" 
+                    Opacity="0.7"
+                    Grid.Column="0"
+                    Grid.Row="1"
+                             >
+                        <ListBox.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel VerticalAlignment="Bottom"/>
+                            </ItemsPanelTemplate>
+                        </ListBox.ItemsPanel>
+                        <ListBox.ItemTemplate>
+                            <DataTemplate>
+                                <StackPanel   VerticalAlignment="Bottom" 
+                                      Orientation="Horizontal">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="30"/>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition Width="30"></ColumnDefinition>
+                                            <ColumnDefinition Width="78"></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+                                        <TextBlock x:Name="Name_User"
+                                                   Text="{Binding User_Name}"
+                                                   FontFamily="Palatino Linotype"
+                                                   FontSize="12"
+                                                   Foreground="White"
+                                                   Background="Transparent"
+                                                   Grid.Column="0">
+                                            
+                                        </TextBlock>
+                                        <Border CornerRadius="5" 
+                                        Background="{Binding backGround}" 
+                                        BorderBrush="{Binding borderBrush}" 
+                                        BorderThickness="0"
+                                        Height="Auto"
+                                        Grid.Column="1">
+                                            <TextBlock x:Name="Message" 
+                                               Text="{Binding Message_Text}" 
+                                               Background="Transparent"
+                                               Foreground="Black"
+                                               FontSize="14"
+                                               FontFamily="Palatino Linotype"
+                                               Width="Auto"
+                                               Height="Auto"
+                                               TextWrapping="Wrap"
+                                               MaxWidth="500"
+                                               Margin="2,2,2,2"/>
+                                        </Border>
+                                        <Button x:Name="DeleteMessage"
+                                        Style="{StaticResource ButtonStyleICO}"
+                                       Background="Transparent"
+                                       local:ButtonImage.Image="Icons/Trash.ico"
+                                       Content="{Binding Message_ID}"
+                                       Width="15"
+                                       Height="15"
+                                       Cursor="Hand"
+                                       ToolTip="Удалить сообщение"
+                                       Click="DeleteMessage_Click"
+                                       Grid.Column="2 "
+                                       HorizontalContentAlignment="Right"
+                                        VerticalAlignment="Center"
+                                        Margin="2,2,2,2"/>
+                                        <Label Content="{Binding Message_Date}"
+                                       FontSize="8"
+                                       FontFamily="Palatino Linotype"
+                                       Foreground="Gray"
+                                       Grid.Column="3"
+                                       HorizontalContentAlignment="Center"
+                                       VerticalAlignment="Bottom"/>
+                                    </Grid>
+                                </StackPanel>
+                            </DataTemplate>
+                        </ListBox.ItemTemplate>
+                    </ListBox>
                 </Grid>
                 <!--Список чатов-->
                 <ListBox x:Name="Chat_list" 
@@ -730,8 +813,14 @@
                         <RowDefinition/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock x:Name="Demon_Connect" Text="Demon is connected" Grid.ColumnSpan="2" Grid.Row="0"/>
-                    <TextBlock x:Name="Server_Connect" Text="Server is connected" Grid.ColumnSpan="2" Grid.Row="1"/>
+                    <!--<TextBlock x:Name="Demon_Connect" Text="Demon is connected" Grid.ColumnSpan="2" Grid.Row="0"/>
+                    <TextBlock x:Name="Server_Connect" Text="Server is connected" Grid.ColumnSpan="2" Grid.Row="1"/>-->
+                    <Button x:Name="Create_Group"
+                            Style="{DynamicResource ButtonStyleMenu}"
+                            Content="Создать групповой чат"
+                            local:ButtonImage.Image="Icons/Users.ico"
+                            Click="Create_Group_Chat">
+                    </Button>
                 </Grid>
             </Grid>
 
