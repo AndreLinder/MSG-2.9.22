@@ -540,6 +540,7 @@
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
+                        <ColumnDefinition Width="150"/>
                     </Grid.ColumnDefinitions>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="20"/>
@@ -552,6 +553,13 @@
                         Content="Нет активного диалога"
                             Background="{DynamicResource BackgroundColor2}">
                     </Button>
+                    <Button x:Name="Manage_Group"
+                            Style="{StaticResource ButtonStyle}"
+                            Content="Управлять группой"
+                            Grid.Column="1"
+                            Width="150"
+                            >
+                    </Button>
                     <!--Список сообщений из определённого диалога-->
                     <ListBox x:Name="Message_List"   
                     Background="#FF1B1B1B" 
@@ -562,7 +570,7 @@
                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                     ToolTip="Текущий диалог" 
                     Opacity="0.7"
-                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
                     Grid.Row="1">
                         <ListBox.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -624,7 +632,7 @@
                         </ListBox.ItemTemplate>
                     </ListBox>
 
-                    <!--Список сообщений из шруппового диалога-->
+                    <!--Список сообщений из группового диалога-->
                     <ListBox x:Name="Message_Group_List"   
                     Background="#FF1B1B1B" 
                     Foreground="{DynamicResource TextColor1}" 
@@ -634,7 +642,7 @@
                     ScrollViewer.VerticalScrollBarVisibility="Hidden"
                     ToolTip="Текущий диалог" 
                     Opacity="0.7"
-                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
                     Grid.Row="1"
                              >
                         <ListBox.ItemsPanel>
@@ -648,7 +656,7 @@
                                       Orientation="Horizontal">
                                     <Grid>
                                         <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="30"/>
+                                            <ColumnDefinition/>
                                             <ColumnDefinition></ColumnDefinition>
                                             <ColumnDefinition Width="30"></ColumnDefinition>
                                             <ColumnDefinition Width="78"></ColumnDefinition>
@@ -656,7 +664,7 @@
                                         <TextBlock x:Name="Name_User"
                                                    Text="{Binding User_Name}"
                                                    FontFamily="Palatino Linotype"
-                                                   FontSize="12"
+                                                   FontSize="10"
                                                    Foreground="White"
                                                    Background="Transparent"
                                                    Grid.Column="0">
@@ -667,7 +675,8 @@
                                         BorderBrush="{Binding borderBrush}" 
                                         BorderThickness="0"
                                         Height="Auto"
-                                        Grid.Column="1">
+                                        Grid.Column="1"
+                                                Margin="4,0">
                                             <TextBlock x:Name="Message" 
                                                Text="{Binding Message_Text}" 
                                                Background="Transparent"
@@ -708,7 +717,34 @@
                     </ListBox>
                 </Grid>
                 <!--Список чатов-->
-                <ListBox x:Name="Chat_list" 
+                <Grid
+                    Grid.Column="1"
+                    >
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="20">
+                        </RowDefinition>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <Button x:Name="PrivateChat"
+                            Style="{StaticResource ButtonStyle}"
+                            Content="Диалоги"
+                            FontSize="10"
+                            Grid.Column="0"
+                            Grid.Row="0" Click="PrivateChat_Click">
+                    </Button>
+                    <Button x:Name="GroupChat"
+                            Style="{StaticResource ButtonStyle}"
+                            Content="Группы"
+                            FontSize="10"
+                            Grid.Column="1"
+                            Grid.Row="0" Click="GroupChat_Click">
+                    </Button>
+                    <ListBox x:Name="Chat_list" 
                     Cursor="Hand" 
                     Background="{StaticResource BackgroundColor2}" 
                     Foreground="{DynamicResource TextColor1}" 
@@ -717,40 +753,40 @@
                     MouseDoubleClick="Chat_list_MouseDoubleClick"
                     ToolTip="Список ваших чатов" 
                     Opacity="0.7"
-                    Grid.RowSpan="1"
-                    Grid.Column="1"
+                    Grid.ColumnSpan="2"
+                    Grid.Row="1"
                      HorizontalContentAlignment="Stretch">
-                    <ListBox.ItemContainerStyle>
-                        <!--Шаблон для TextBox'а в списке чатов-->
-                        <Style TargetType="ListBoxItem">
-                            <Setter Property="Background" Value="{StaticResource BackgroundButton}"/>
-                            <Setter Property="Foreground" Value="{StaticResource TextColor1}"/>
-                            <Setter Property="Template">
-                                <Setter.Value>
-                                    <ControlTemplate>
-                                        <Grid>
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition MaxWidth="40">
-                                                </ColumnDefinition>
-                                                <ColumnDefinition></ColumnDefinition>
-                                            </Grid.ColumnDefinitions>
-                                            <Grid.RowDefinitions>
-                                                <RowDefinition Height="40"></RowDefinition>
-                                                <RowDefinition Height="5"></RowDefinition>
-                                            </Grid.RowDefinitions>
-                                            <Border    CornerRadius="5" 
+                        <ListBox.ItemContainerStyle>
+                            <!--Шаблон для TextBox'а в списке чатов-->
+                            <Style TargetType="ListBoxItem">
+                                <Setter Property="Background" Value="{StaticResource BackgroundButton}"/>
+                                <Setter Property="Foreground" Value="{StaticResource TextColor1}"/>
+                                <Setter Property="Template">
+                                    <Setter.Value>
+                                        <ControlTemplate>
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition MaxWidth="40">
+                                                    </ColumnDefinition>
+                                                    <ColumnDefinition></ColumnDefinition>
+                                                </Grid.ColumnDefinitions>
+                                                <Grid.RowDefinitions>
+                                                    <RowDefinition Height="40"></RowDefinition>
+                                                    <RowDefinition Height="5"></RowDefinition>
+                                                </Grid.RowDefinitions>
+                                                <Border    CornerRadius="5" 
                                                    Background="{TemplateBinding Button.Background}" 
                                                    Grid.ColumnSpan="2"
                                                    Grid.Row="0">
-                                            </Border>
-                                            <Image     Source="Icons/Dialog.ico"
+                                                </Border>
+                                                <Image     Source="Icons/Dialog.ico"
                                                    Grid.Column="0"
                                                    Grid.Row="0"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"
                                                    Height="20"
                                                       Width="20"/>
-                                            <TextBlock Text="{Binding Name}"  
+                                                <TextBlock Text="{Binding Name}"  
                                                    FontSize="14"
                                                    Foreground="{TemplateBinding Button.Foreground}"
                                                    FontFamily="Palatino Linotype"
@@ -759,19 +795,21 @@
                                                    Grid.Row="0"
                                                    HorizontalAlignment="Center"
                                                    VerticalAlignment="Center"/>
-                                        </Grid>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsMouseOver" Value="True">
-                                                <Setter Property="Background" Value="{StaticResource IsMouseOverColor}"/>
-                                                <Setter Property="Foreground" Value="Black"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
-                                    </ControlTemplate>
-                                </Setter.Value>
-                            </Setter>
-                        </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+                                            </Grid>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter Property="Background" Value="{StaticResource IsMouseOverColor}"/>
+                                                    <Setter Property="Foreground" Value="Black"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </ListBox.ItemContainerStyle>
+                    </ListBox>
+                </Grid>
+                
 
                 <Grid Grid.Row="1"
                   Grid.Column="0">

@@ -199,7 +199,7 @@
                         <Border Background="{TemplateBinding Button.Background}" 
                             CornerRadius="5"/>
                         <TextBlock Text="{TemplateBinding Button.Content}" 
-                                   FontSize="14" 
+                                   FontSize="{TemplateBinding Button.FontSize}" 
                                    FontFamily="Palatino Linotype" 
                                    Foreground="{TemplateBinding Button.Foreground}" 
                                    HorizontalAlignment="Center" 

@@ -37,6 +37,9 @@ namespace MSG_by_AL__XAML_
         //Список GUID чатов и ID пользователей для быстрого доступа к диалогу
         List<Chat_List> chat_list = new List<Chat_List>();
 
+        //Список групповых чатов
+        List<Chat_List> group_chats = new List<Chat_List>();
+
         //ID, guid и никнейм собеседника
         public static int IDFriend = -1;
         public static string Friend_Nick="null";
@@ -46,6 +49,7 @@ namespace MSG_by_AL__XAML_
         public static int IDChat = -1;
         public static string GuID_Chat = "null";
         public static int MessageCount = -1;
+        public static bool IsPrivate_Chat = true;
 
 
         //Создание объекта подключения к БД
@@ -132,6 +136,7 @@ namespace MSG_by_AL__XAML_
                     list.ID_Friend = int.Parse(value[4]);
                     list.Public = false;
                     Chat_list.Items.Add(list);
+                    
 
                     User U = new User();
                     U.ID = int.Parse(value[4]);
@@ -306,6 +311,7 @@ namespace MSG_by_AL__XAML_
             Hidden_Additional_Window();
             Dispatcher.Invoke(() => Active_Friend.Content = users_chat.Find(x=>x.ID == friend_ID).Name);
             GuID_Chat = chat_list.Find(x => x.ID_Friend == friend_ID).GUID;
+            IsPrivate_Chat = true;
             AES256 aes = new AES256(GuID_Chat);
             try
             {
@@ -356,29 +362,41 @@ namespace MSG_by_AL__XAML_
         //Метод отправки сообщений (10#)
         private void Sending_Message()
         {
-            //Чтобы не отправлялись пустые сообщения
-            if ((TextBox_Message.Text.Length != 0) & GuID_Chat != "null")
-            {
-                AES256 aes = new AES256(GuID_Chat);
-
-                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("10#", IDuser + "~" + IDFriend + "~" + aes.Encode(TextBox_Message.Text) + "~");
-
-                if (values[0][0] != "ERROR")
+                //Чтобы не отправлялись пустые сообщения
+                if ((TextBox_Message.Text.Length != 0) & GuID_Chat != "null")
                 {
-                    //Добавляем сообщение в диалог
-                    //Нет возможности добавить ID для своего сообщения, т.к. его формирует БД
-                    //Отправленное сообщение возможно не получится удалить, пока не перезайти в диалог
-                    Message my_message = new Message();
-                    my_message.Message_ID = int.Parse(values[0][0]);
-                    my_message.Message_Text = TextBox_Message.Text;
-                    my_message.Message_Date = DateTime.Now.ToString();
-                    my_message.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
-                    my_message.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
-                    Message_List.Items.Add(my_message);
-                    Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
-                    TextBox_Message.Text = "";
+                    AES256 aes = new AES256(GuID_Chat);
+
+                    List<List<string>> values;
+
+                if (IsPrivate_Chat) values = ServerConnect.RecieveBigDataFromDB("10#", IDuser + "~" + IDFriend + "~" + aes.Encode(TextBox_Message.Text) + "~");
+                else values = ServerConnect.RecieveBigDataFromDB("18#",IDChat + "~" + IDuser + "~" + aes.Encode(TextBox_Message.Text) + "~");
+
+                    if (values[0][0] != "ERROR")
+                    {
+                        //Добавляем сообщение в диалог
+                        //Нет возможности добавить ID для своего сообщения, т.к. его формирует БД
+                        //Отправленное сообщение возможно не получится удалить, пока не перезайти в диалог
+                        Message my_message = new Message();
+                        my_message.Message_ID = int.Parse(values[0][0]);
+                        my_message.Message_Text = TextBox_Message.Text;
+                        my_message.Message_Date = DateTime.Now.ToString();
+                        my_message.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
+                        my_message.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
+                        if (IsPrivate_Chat)
+                        {
+                            Message_List.Items.Add(my_message);
+                            Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
+                        }
+                        else
+                        {
+                            my_message.User_Name = NickName;
+                            Message_Group_List.Items.Add(my_message);
+                            Message_Group_List.ScrollIntoView(Message_Group_List.Items[Message_Group_List.Items.Count - 1]);
+                        }
+                        TextBox_Message.Text = "";
+                    }
                 }
-            }
         }
 
         //Добавление пользователя в друзья(11#)
@@ -477,9 +495,89 @@ namespace MSG_by_AL__XAML_
         }
 
         //Тестовый метод открытия группового чата
-        private void Open_Group_Chat(int ID_Chat)
+        private async void Open_Group_Chat(int ID_Chat)
         {
+            //Скрываем окно для отображения списка в частном диалоге
+            Dispatcher.Invoke(() => Message_List.Visibility = Visibility.Hidden);
+            //Отображаем окно для вывода сообщений из группового чата
+            Dispatcher.Invoke(()=>Message_Group_List.Visibility = Visibility.Visible);
 
+            //Очищаем список сообщений
+            Dispatcher.Invoke(() => Message_Group_List.Items.Clear());
+
+            //Запоминаем ID текущего чата
+            IDChat = ID_Chat;
+            IsPrivate_Chat = false;
+            GuID_Chat = group_chats.Find(x => x.ID == ID_Chat).GUID;
+
+            AES256 aes = new AES256(GuID_Chat);
+            try
+            {
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("17#", IDChat + "~" + IDuser);
+                if (values[0][0] != "ERROR")
+                {
+                    foreach (List<string> value in values)
+                    {
+                        if (int.Parse(value[2]) == IDuser)
+                        {
+                            //Создадим объект привязки данных и определим свойства
+                            Message MSG = new Message();
+                            MSG.Message_ID = int.Parse(value[0]);
+                            MSG.Message_Text = aes.Decode(value[1]);
+                            MSG.Message_Date = value[3];
+                            MSG.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
+                            MSG.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
+                            MSG.User_Name = value[4];
+                            Dispatcher.Invoke(() => Message_Group_List.Items.Add(MSG));
+                        }
+                        else
+                        {
+                            Message MSG = new Message();
+                            MSG.Message_ID = int.Parse(value[0]);
+                            MSG.Message_Text = aes.Decode(value[1]);
+                            MSG.Message_Date = value[3];
+                            MSG.borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
+                            MSG.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
+                            MSG.User_Name = value[4];
+                            Dispatcher.Invoke(() => Message_Group_List.Items.Add(MSG));
+                        }
+                    }
+                    //Здесь должно отправляться сообщение о прочтении определенным пользователем
+                    //Путем добавления в таблицу записи &@ID$!
+                    //ServerConnect.RecieveBigDataFromDB("07#", IDuser + "~" + IDFriend);
+                }
+
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.ToString());
+            }
+            finally
+            {
+                //Здесь нужна отдельная функция проверки новых сообщений в чате
+                //if (Message_List.Items.Count != 0) Dispatcher.Invoke(() => Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]));
+                //await Task.Run(() => Refresh_Chat_Async(friend_ID));
+            }
+        }
+
+        //Обновление списка групповых диалогов(16#)
+        private void Update_Group_Chat_List()
+        {
+            Chat_list.Items.Clear();
+            List<List<string>> values = ServerConnect.RecieveBigDataFromDB("16#", IDuser + "~");
+
+            foreach(List<string> value in values)
+            {
+                Chat_List list = new Chat_List();
+                list.ID = int.Parse(value[0]);
+                list.Name = value[1];
+                list.GUID = value[3];
+                list.Public = true;
+
+                group_chats.Add(list);
+                Chat_list.Items.Add(list);
+            }
         }
 
 
@@ -507,21 +605,6 @@ namespace MSG_by_AL__XAML_
 
         }
 
-        //Создание группового диалога
-        private void Create_Group_Chat(object sender, EventArgs e)
-        {
-            try
-            {
-                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("15#", Name + "~");
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
-            //Тут должен запускаться метод обновления групповых диалогов
-
-        }
-
         //Отпрвака сообщения
         private void Send_Message_Click(object sender, RoutedEventArgs e)
         {
@@ -534,6 +617,8 @@ namespace MSG_by_AL__XAML_
             Chat_List item = (Chat_List)Dispatcher.Invoke(() => Chat_list.SelectedItem);
             if (!item.Public)
             {
+                Dispatcher.Invoke(() => Message_Group_List.Visibility = Visibility.Hidden);
+                Dispatcher.Invoke(() => Message_List.Visibility = Visibility.Visible);
                 Friend_Nick = item.Name;
                 GuID_Chat = item.GUID;
                 if (IDFriend == item.ID_Friend)
@@ -550,8 +635,10 @@ namespace MSG_by_AL__XAML_
             }
             else
             {
+                Dispatcher.Invoke(() => Message_Group_List.Visibility = Visibility.Visible);
+                Dispatcher.Invoke(() => Message_List.Visibility = Visibility.Hidden);
                 GuID_Chat = item.GUID;
-                Open_Group_Chat(item.ID);
+                await Task.Run(()=>Open_Group_Chat(item.ID));
             }
         }
 
@@ -688,6 +775,30 @@ namespace MSG_by_AL__XAML_
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        //Открытия списка приватных диалогов
+        private void PrivateChat_Click(object sender, RoutedEventArgs e)
+        {
+            Update_Dialog_List();
+        }
+
+        private void Create_Group_Chat(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                List<List<string>> values = ServerConnect.RecieveBigDataFromDB("15#", NickName + "~" + IDuser + "~");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            //Тут должен запускаться метод обновления групповых диалогов
+        }
+
+        private void GroupChat_Click(object sender, RoutedEventArgs e)
+        {
+            Update_Group_Chat_List();
         }
     }
 }
