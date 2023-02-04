@@ -6,8 +6,6 @@ using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Threading;
-using MySql.Data.MySqlClient;
-using ConnectionDB;
 using MSG_by_AL__XAML_.Resource;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Xaml.Controls.Maps;
@@ -50,10 +48,6 @@ namespace MSG_by_AL__XAML_
         public static string GuID_Chat = "null";
         public static int MessageCount = -1;
         public static bool IsPrivate_Chat = true;
-
-
-        //Создание объекта подключения к БД
-        MySqlConnection connection = DBUtils.GetDBConnection();
 
         public ChatsPage(int ID, string nick, string guID)
         {
@@ -195,7 +189,7 @@ namespace MSG_by_AL__XAML_
         }
 
         //Запуск асинхронной операции обновления текущего диалога(06#)
-        public void Refresh_Chat_Async(int id_f)
+        public async void Refresh_Chat_Async(int id_f)
         {
             AES256 aes = new AES256(GuID_Chat);
             while (IDFriend == id_f)
@@ -286,6 +280,7 @@ namespace MSG_by_AL__XAML_
                         U.ID = int.Parse(value[0]);
                         users.Add(U);
                     }
+
                 }
             }
             catch (Exception ex)
@@ -359,7 +354,7 @@ namespace MSG_by_AL__XAML_
             }
         }
 
-        //Метод отправки сообщений (10#)
+        //Метод отправки сообщений (10#+18#)
         private void Sending_Message()
         {
                 //Чтобы не отправлялись пустые сообщения
@@ -494,7 +489,7 @@ namespace MSG_by_AL__XAML_
             Dispatcher.Invoke(()=>ButtonBlurEffect.Visibility = Visibility.Hidden);
         }
 
-        //Тестовый метод открытия группового чата
+        //Тестовый метод открытия группового чата(#17)
         private async void Open_Group_Chat(int ID_Chat)
         {
             //Скрываем окно для отображения списка в частном диалоге
@@ -546,8 +541,6 @@ namespace MSG_by_AL__XAML_
                     //Путем добавления в таблицу записи &@ID$!
                     //ServerConnect.RecieveBigDataFromDB("07#", IDuser + "~" + IDFriend);
                 }
-
-
             }
             catch (Exception ex)
             {
@@ -578,6 +571,48 @@ namespace MSG_by_AL__XAML_
                 group_chats.Add(list);
                 Chat_list.Items.Add(list);
             }
+        }
+
+        //Получение списка пользователей чата(#19)
+        private void List_Users_Group_Chat(int IDGroupChat)
+        {
+            //Объявдяем первичный и вторичный флаги для отбора ID
+            bool first_flag = false;
+            bool second_flag = false;
+            //Получаем значение списка ID
+            List<List<string>> values = ServerConnect.RecieveBigDataFromDB("#19", IDGroupChat + "~");
+            //Результирующий список ID
+            List<int> id_user = new List<int>();
+
+            //Переменная временного ID
+            string temp_id = "";
+            //Очищаем список ID
+            UsersChat.Items.Clear();
+
+            //Очищаем строку ID
+            for (int i = 0; i < values[0][0].Length; i++)
+            {
+                if (values[0][0][i] == '&')
+                {
+                    first_flag = true;
+                    continue;
+                }
+                if (values[0][0][i] == '$' && values[0][0][i+1] == '!')
+                {
+                    second_flag = true;
+                    i++;
+                    id_user.Add(int.Parse(temp_id));
+                    continue;
+                }
+                if(first_flag && !second_flag)
+                {
+                    temp_id += values[0][0][i];
+                    continue;
+                }
+            }
+
+            //А как блять имена получить???
+
         }
 
 
@@ -673,9 +708,7 @@ namespace MSG_by_AL__XAML_
             Friend_Nick = ((User)users.Find(x => x.ID == IDFriend)).Name;
             if((users_chat.Find(x=>x.ID == IDFriend)) == null) CreateNewChat(IDFriend, Friend_Nick);
             await Task.Run(() => OpenChat(IDFriend));
-        }
-
-       
+        } 
 
         //Развернуть или свернуть меню
         private void Show_Hidden_Menu(object sender, System.Windows.Input.MouseEventArgs e)
@@ -711,6 +744,7 @@ namespace MSG_by_AL__XAML_
                 ButtonBlurEffect.Visibility = Visibility.Visible;
                 SearchWindow.Visibility = Visibility.Visible;
                 FriendWindow.Visibility = Visibility.Hidden;
+                UsersFromGroupChat.Visibility = Visibility.Hidden;
             }
             else
             {
@@ -734,6 +768,7 @@ namespace MSG_by_AL__XAML_
                 ButtonBlurEffect.Visibility = Visibility.Visible;
                 FriendWindow.Visibility = Visibility.Visible;
                 SearchWindow.Visibility = Visibility.Hidden;
+                UsersFromGroupChat.Visibility = Visibility.Hidden;
             }
         }
 
@@ -766,15 +801,19 @@ namespace MSG_by_AL__XAML_
             if (Notification_Search_Window.Height > 0) Pop_Up_Notification();
         }
 
+        //Скрывает доп. окна
+        private void Hidden_Additional_Window(object sender, RoutedEventArgs e)
+        {
+            UsersFromGroupChat.Visibility= Visibility.Hidden;
+            FriendWindow.Visibility= Visibility.Hidden;
+            SearchWindow.Visibility= Visibility.Hidden;
+            ButtonBlurEffect.Visibility= Visibility.Hidden;
+        }
+
         //Выйти из аккаунта пользователя
         private void Exit_Account(object sender, RoutedEventArgs e) 
         {
             this.Close();
-        }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
         }
 
         //Открытия списка приватных диалогов
@@ -799,6 +838,24 @@ namespace MSG_by_AL__XAML_
         private void GroupChat_Click(object sender, RoutedEventArgs e)
         {
             Update_Group_Chat_List();
+        }
+
+        private void Open_Users_List(object sender, RoutedEventArgs e)
+        {
+            //Если открыто, то скрыть
+            if (UsersFromGroupChat.Visibility == Visibility.Visible)
+            {
+                ButtonBlurEffect.Visibility = Visibility.Hidden;
+                UsersFromGroupChat.Visibility = Visibility.Hidden;
+            }
+            //Если закрыто, то открыть
+            else
+            {
+                ButtonBlurEffect.Visibility = Visibility.Visible;
+                UsersFromGroupChat.Visibility = Visibility.Visible;
+                SearchWindow.Visibility = Visibility.Hidden;
+                FriendWindow.Visibility = Visibility.Hidden;
+            }
         }
     }
 }

@@ -13,7 +13,7 @@
         WindowStartupLocation="CenterScreen"
          
         Background="{StaticResource BackgroundColor}">
-    <Grid Margin="0,0,3.2,0.6">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition MaxHeight="40"
@@ -40,8 +40,15 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <Image
+               Grid.ColumnSpan="1"
+               Grid.RowSpan="9" Stretch="Fill">
+            <Image.Source>
+                <BitmapImage UriSource="Resource/1.jpg"/>
+            </Image.Source>
+            </Image>
 
-        <Image Source="Icons/NewLogo.png"
+            <Image Source="Icons/NewLogo.png"
                HorizontalAlignment="Center"
                VerticalAlignment="Top"
                Grid.Row="0"

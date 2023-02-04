@@ -1,21 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Windows.Media.Animation;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Data.Common;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using MySql.Data.MySqlClient;
-using ConnectionDB;
 using System.Security.Cryptography;
 
 namespace MSG_by_AL__XAML_
@@ -61,6 +49,11 @@ namespace MSG_by_AL__XAML_
                         Notification_Text.Text = "Неверный логин или пароль!";
                         Pop_Up_Notification();
                     }
+                }
+                else if (values[0] == "ERROR")
+                {
+                    Notification_Text.Text = "Неверный логин или пароль!";
+                    Pop_Up_Notification();
                 }
                 else
                 {

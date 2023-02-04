@@ -31,5 +31,10 @@ namespace MSG_by_AL__XAML_.Resource
 
         //Отметка: приватный групповой
         public bool Public { get; set; }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }
