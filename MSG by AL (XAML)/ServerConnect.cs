@@ -65,7 +65,7 @@ namespace MSG_by_AL__XAML_
             }
             catch (SocketException ex)
             {
-                values[0] = "ERROR_SOCKET";
+                values[0] = "ERROR_SOCKET: " + ex.Message;
                 return values;
             }
             catch (Exception ex)

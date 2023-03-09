@@ -439,27 +439,31 @@
 
     <!--Шаблон кнопки для меню-->
     <Style x:Key="ButtonStyleMenu" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource BackgroundButton}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundButton}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextColor1}"/>
         <Setter Property="Opacity" Value="0.7"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
                     <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MaxWidth="30"
+                                              MinWidth="30">
+                            </ColumnDefinition>
+                            <ColumnDefinition>
+                            </ColumnDefinition>
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition MaxHeight="20"
-                                              MinHeight="20">
-                            </RowDefinition>
-                            <RowDefinition>
-                            </RowDefinition>
+                            <RowDefinition MinHeight="30"/>
                         </Grid.RowDefinitions>
                         <Border Background="{TemplateBinding Button.Background}" 
                                 CornerRadius="0"
-                                Grid.RowSpan="2">
+                                Grid.ColumnSpan="2">
                         </Border>
                         <Image HorizontalAlignment="Center"
                                Source="{TemplateBinding local:ButtonImage.Image}"
-                               Grid.Row="0">
+                               Grid.Column="0"
+                               Margin="3,3">
                         </Image>
                         <TextBlock Text="{TemplateBinding Button.Content}" 
                                    FontSize="12" 
@@ -469,7 +473,7 @@
                                    VerticalAlignment="Center"
                                    TextWrapping="Wrap"
                                    TextAlignment="Center"
-                                   Grid.Row="1"/>
+                                   Grid.Column="1"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -657,90 +661,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-
-
-    <ControlTemplate x:Key="ComboBoxTextBox" TargetType="{x:Type TextBox}">
-        <Border x:Name="PART_ContentHost" Focusable="False" Background="{TemplateBinding Background}" />
-    </ControlTemplate>
-    <Style x:Key="ComboBoxStyle" TargetType="{x:Type ComboBox}">
-        <Setter Property="Background" Value="{StaticResource BackgroundColor2}"/>
-        <Setter Property="Opacity" Value="0.7"/>
-        <Setter Property="Width" Value="Auto"/>
-        <Setter Property="Height" Value="28"/>
-        <Setter Property="FontFamily" Value="Calibri,Arial"/>
-        <Setter Property="FontSize" Value="12"/>
-        <Setter Property="Padding" Value="4"/>
-        <Setter Property="Foreground" Value="{StaticResource TextColor3}"/>
-        <Setter Property="SnapsToDevicePixels" Value="True"/>
-        <Setter Property="IsSynchronizedWithCurrentItem" Value="False"/>
-        <Setter Property="HorizontalContentAlignment" Value="Left"/>
-        <Setter Property="VerticalContentAlignment" Value="Center"/>
-        <Setter Property="OverridesDefaultStyle" Value="True"/>
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
-        <Setter Property="ScrollViewer.CanContentScroll" Value="True"/>
-        <Setter Property="BorderThickness" Value="1"/>
-        <Setter Property="ItemsPanel">
-            <Setter.Value>
-                <ItemsPanelTemplate>
-                    <VirtualizingStackPanel IsVirtualizing="True"/>
-                </ItemsPanelTemplate>
-            </Setter.Value>
-        </Setter>
-        <Setter Property="Template">
-            <Setter.Value>
-                <ControlTemplate TargetType="{x:Type ComboBox}">
-                    <Grid>
-                        <ToggleButton Name="ToggleButton" Grid.Column="2" Focusable="False"
-                                      IsChecked="{Binding Path=IsDropDownOpen,Mode=TwoWay,RelativeSource={RelativeSource TemplatedParent}}" ClickMode="Press"/>
-                        <ContentPresenter Name="ContentSite" IsHitTestVisible="False" Content="{TemplateBinding SelectionBoxItem}" ContentTemplate="{TemplateBinding SelectionBoxItemTemplate}"
-                                          ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}" Margin="6,3,32,3" VerticalAlignment="Center"
-                                          HorizontalAlignment="Left"  />
-                        <TextBox x:Name="PART_EditableTextBox" Style="{x:Null}" Template="{StaticResource ComboBoxTextBox}" HorizontalAlignment="Left" 
-                                 VerticalAlignment="Center" Margin="6,3,32,3" Focusable="True" Background="Transparent" Visibility="Hidden" IsReadOnly="{TemplateBinding IsReadOnly}"/>
-                        <Popup Name="Popup" Placement="Bottom" IsOpen="{TemplateBinding IsDropDownOpen}" AllowsTransparency="True" Focusable="False"
-                               PopupAnimation="Slide" Margin="3,-8,-3,8">
-                            <Grid Name="DropDown" SnapsToDevicePixels="True" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="{TemplateBinding MaxDropDownHeight}">
-                                <Border x:Name="DropDownBorder" Background="{StaticResource BackgroundButton}" BorderThickness="1" CornerRadius="3" Margin="0,3,0,3"
-                                        BorderBrush="{StaticResource TextColor1}"/>
-                                <ScrollViewer Margin="0,3" SnapsToDevicePixels="True">
-                                    <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Contained" />
-                                </ScrollViewer>
-                            </Grid>
-                        </Popup>
-                    </Grid>
-                    <ControlTemplate.Triggers>
-                        <Trigger Property="HasItems" Value="False">
-                            <Setter TargetName="DropDownBorder" Property="MinHeight" Value="95"/>
-                        </Trigger>
-                        <Trigger Property="IsEnabled" Value="False">
-                            <Setter Property="Foreground">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="White"/>
-                                </Setter.Value>
-                            </Setter>
-                            <Setter Property="Background" Value="{StaticResource BackgroundColor2}"/>
-                            <Setter Property="Opacity" Value="0.72"/>
-                        </Trigger>
-                        <Trigger Property="IsGrouping" Value="True">
-                            <Setter Property="ScrollViewer.CanContentScroll" Value="False"/>
-                        </Trigger>
-                        <Trigger SourceName="Popup" Property="Popup.AllowsTransparency" Value="True"/>
-                        <Trigger Property="IsEditable" Value="True">
-                            <Setter Property="IsTabStop" Value="False"/>
-                            <Setter TargetName="PART_EditableTextBox" Property="Visibility"	Value="Visible"/>
-                            <Setter TargetName="ContentSite" Property="Visibility" Value="Hidden"/>
-                        </Trigger>
-                        <Trigger Property="IsDropDownOpen" Value="True">
-                            <Setter Property="BorderBrush" Value="{StaticResource BackgroundColor2}" />
-                        </Trigger>
-                    </ControlTemplate.Triggers>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-        <Style.Triggers>
-        </Style.Triggers>
     </Style>
 
 </ResourceDictionary>

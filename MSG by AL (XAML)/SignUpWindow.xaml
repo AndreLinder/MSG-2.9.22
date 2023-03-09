@@ -10,9 +10,17 @@
         Width="500" 
         WindowStyle="ThreeDBorderWindow" 
         Icon="Icons/MSG_BY_AL.ico" 
-        Background="{StaticResource BackgroundColor}" 
         Closing="SignUpWindow_Closing"
         WindowStartupLocation="CenterScreen">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF783077"/>
+            <GradientStop Color="#FFDD4A96" Offset="0.3"/>
+            <GradientStop Color="#FFF598A1" Offset="0.5"/>
+            <GradientStop Color="#FFAC3C86" Offset="0.7"/>
+            <GradientStop Color="#FF262161" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
@@ -41,6 +49,19 @@
             </RowDefinition>
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
+
+        <!--<Image
+               Grid.ColumnSpan="1"
+               Grid.RowSpan="10" Stretch="Fill">
+            <Image.Source>
+                <BitmapImage UriSource="Resource/1.jpg"/>
+            </Image.Source>
+        </Image>-->
+
+        <Image Source="{StaticResource _1614719423_80_p_foni_dlya_artov_103DrawingImage}"
+               Stretch="Fill"
+               Grid.RowSpan="10"/>
+
         <PasswordBox x:Name="password_text" 
                      Style="{StaticResource PasswordBoxStyle}"  
                      BorderThickness="0"

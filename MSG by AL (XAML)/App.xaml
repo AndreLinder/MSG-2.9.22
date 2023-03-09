@@ -7,6 +7,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Dictionary.xaml"/>
+                <ResourceDictionary x:Name="BACK" Source="Resource/1.xaml"/>
+                <ResourceDictionary x:Name="Chat" Source="Resource/Chat.xaml"/>
+                <ResourceDictionary x:Name="Contact" Source="Resource/Contact.xaml"/>
+                <ResourceDictionary x:Name="Logout" Source="Resource/Logout.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>
