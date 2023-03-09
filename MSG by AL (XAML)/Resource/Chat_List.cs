@@ -28,5 +28,13 @@ namespace MSG_by_AL__XAML_.Resource
 
         //GUID определенного диалога
         public string GUID { get; set; }
+
+        //Отметка: приватный групповой
+        public bool Public { get; set; }
+
+        public override string ToString()
+        {
+            return base.ToString();
+        }
     }
 }

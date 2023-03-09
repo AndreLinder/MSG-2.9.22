@@ -199,7 +199,7 @@
                         <Border Background="{TemplateBinding Button.Background}" 
                             CornerRadius="5"/>
                         <TextBlock Text="{TemplateBinding Button.Content}" 
-                                   FontSize="14" 
+                                   FontSize="{TemplateBinding Button.FontSize}" 
                                    FontFamily="Palatino Linotype" 
                                    Foreground="{TemplateBinding Button.Foreground}" 
                                    HorizontalAlignment="Center" 
@@ -439,27 +439,31 @@
 
     <!--Шаблон кнопки для меню-->
     <Style x:Key="ButtonStyleMenu" TargetType="Button">
-        <Setter Property="Background" Value="{DynamicResource BackgroundButton}"/>
+        <Setter Property="Background" Value="{StaticResource BackgroundButton}"/>
         <Setter Property="Foreground" Value="{DynamicResource TextColor1}"/>
         <Setter Property="Opacity" Value="0.7"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
                     <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition MaxWidth="30"
+                                              MinWidth="30">
+                            </ColumnDefinition>
+                            <ColumnDefinition>
+                            </ColumnDefinition>
+                        </Grid.ColumnDefinitions>
                         <Grid.RowDefinitions>
-                            <RowDefinition MaxHeight="20"
-                                              MinHeight="20">
-                            </RowDefinition>
-                            <RowDefinition>
-                            </RowDefinition>
+                            <RowDefinition MinHeight="30"/>
                         </Grid.RowDefinitions>
                         <Border Background="{TemplateBinding Button.Background}" 
                                 CornerRadius="0"
-                                Grid.RowSpan="2">
+                                Grid.ColumnSpan="2">
                         </Border>
                         <Image HorizontalAlignment="Center"
                                Source="{TemplateBinding local:ButtonImage.Image}"
-                               Grid.Row="0">
+                               Grid.Column="0"
+                               Margin="3,3">
                         </Image>
                         <TextBlock Text="{TemplateBinding Button.Content}" 
                                    FontSize="12" 
@@ -469,7 +473,7 @@
                                    VerticalAlignment="Center"
                                    TextWrapping="Wrap"
                                    TextAlignment="Center"
-                                   Grid.Row="1"/>
+                                   Grid.Column="1"/>
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">

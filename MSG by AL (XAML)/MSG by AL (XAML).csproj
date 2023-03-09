@@ -29,13 +29,14 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ProductName>MGG BY AL</ProductName>
+    <ProductName>M.A.L.</ProductName>
     <PublisherName>Andre Linder</PublisherName>
+    <SuiteName>M.A.L.</SuiteName>
     <WebPage>publish.htm</WebPage>
     <AutorunEnabled>true</AutorunEnabled>
-    <ApplicationRevision>17</ApplicationRevision>
+    <ApplicationRevision>8</ApplicationRevision>
     <ApplicationVersion>2.0.4.%2a</ApplicationVersion>
-    <UseApplicationTrust>false</UseApplicationTrust>
+    <UseApplicationTrust>true</UseApplicationTrust>
     <CreateDesktopShortcut>true</CreateDesktopShortcut>
     <PublishWizardCompleted>true</PublishWizardCompleted>
     <BootstrapperEnabled>true</BootstrapperEnabled>
@@ -108,10 +109,6 @@
     <ErrorReport>prompt</ErrorReport>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MySql.Data, Version=8.0.22.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Resource\.dll\MySql.Data.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Net.Http" />
@@ -139,8 +136,6 @@
     <Compile Include="Resource\AES256.cs" />
     <Compile Include="Resource\ButtonImage.cs" />
     <Compile Include="Resource\Chat_List.cs" />
-    <Compile Include="Resource\DBMySQLUtils.cs" />
-    <Compile Include="Resource\DBUtils.cs" />
     <Compile Include="Resource\Images.cs" />
     <Compile Include="Resource\Message.cs" />
     <Compile Include="Resource\User.cs" />
@@ -168,6 +163,22 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Resource\1.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resource\Chat.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resource\Contact.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Resource\Logout.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="SignUpWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -222,9 +233,6 @@
     <Resource Include="Icons\Write.ico" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="New_Delete.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Icons\Exlamanation_Mark.png" />
   </ItemGroup>
   <ItemGroup>
@@ -241,9 +249,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Info.ico" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="Icons\Menu.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Icons\Exit.ico" />
@@ -279,6 +284,9 @@
     <PackageReference Include="Microsoft.Toolkit.Uwp.Notifications">
       <Version>7.1.3</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Icons\Menu.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

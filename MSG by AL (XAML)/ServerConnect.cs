@@ -2,10 +2,8 @@
 using System.Text;
 using System.Net;
 using System.Net.Sockets;
-using System.Data.Common;
 using System.Collections.Generic;
 using System.Windows;
-using MySql.Data.MySqlClient;
 
 namespace MSG_by_AL__XAML_
 {
@@ -13,7 +11,7 @@ namespace MSG_by_AL__XAML_
     {
         //Адрес и порт для подключения к серверу
         static int port = 8005;
-        static IPAddress IP = IPAddress.Parse("77.50.200.145");/*Dns.GetHostAddresses("andrelinder.ddns.net")[0]*/
+        static IPAddress IP = Dns.GetHostAddresses("andre-linder-msg.asuscomm.com")[0];
 
         //Пустой конструктор класса
         public ServerConnect()
@@ -21,10 +19,10 @@ namespace MSG_by_AL__XAML_
 
         }
 
-        //Метод, осуществляющий соединение с сервером и получения от него соответствующих данных
+        /*!Метод, осуществляющий соединение с сервером и получения от него соответствующих данных*/
         public static List<string> RecieveDataFromDB(string numberCommand, string parameters = "")
         {
-            //Список значений, полученных от сервера
+            /*!Список значений, полученных от сервера*/
             List<string> values = new List<string>();
 
             try
@@ -65,15 +63,15 @@ namespace MSG_by_AL__XAML_
                 socket.Shutdown(SocketShutdown.Both);
                 socket.Close();
             }
-            catch (MySqlException ex)
+            catch (SocketException ex)
+            {
+                values[0] = "ERROR_SOCKET: " + ex.Message;
+                return values;
+            }
+            catch (Exception ex)
             {
                 //Выводим сообщения об возникшем исключении
                 MessageBox.Show(ex.Message);
-            }
-            catch (SocketException ex)
-            {
-                values[0] = "ERROR";
-                return values;
             }
             //Возвращаем список значений для дальнейших действий
             return values;
@@ -130,15 +128,16 @@ namespace MSG_by_AL__XAML_
                     values.Add(list);
                 }
             }
-            catch (MySqlException ex)
+            catch (Exception ex)
             {
                 //Выводим сообщения об возникшем исключении
-                MessageBox.Show(ex.Message + "\n" + ex.Number);
+                MessageBox.Show(ex.Message);
             }
             //Возвращаем список значений для дальнейших действий
             return values;
         }
 
+        
         public static List<List<string>> RecieveNotification(int ID)
         {
             List<List<string>> values = new List<List<string>>();

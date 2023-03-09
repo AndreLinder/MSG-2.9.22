@@ -10,10 +10,17 @@
         Width="500" 
         WindowStyle="ThreeDBorderWindow" 
         Icon="Icons\MSG_BY_AL.ico" 
-        WindowStartupLocation="CenterScreen"
-         
-        Background="{StaticResource BackgroundColor}">
-    <Grid Margin="0,0,3.2,0.6">
+        WindowStartupLocation="CenterScreen">
+    <Window.Background>
+        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+            <GradientStop Color="#FF783077"/>
+            <GradientStop Color="#FFDD4A96" Offset="0.3"/>
+            <GradientStop Color="#FFF598A1" Offset="0.5"/>
+            <GradientStop Color="#FFAC3C86" Offset="0.7"/>
+            <GradientStop Color="#FF262161" Offset="1"/>
+        </LinearGradientBrush>
+    </Window.Background>
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition></RowDefinition>
             <RowDefinition MaxHeight="40"
@@ -40,13 +47,17 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition></ColumnDefinition>
         </Grid.ColumnDefinitions>
+        <!--<Image
+               Grid.ColumnSpan="1"
+               Grid.RowSpan="9" Stretch="Fill">
+            <Image.Source>
+                <BitmapImage UriSource="Resource/1.png"/>
+            </Image.Source>
+            </Image>-->
 
-        <Image Source="Icons/NewLogo.png"
-               HorizontalAlignment="Center"
-               VerticalAlignment="Top"
-               Grid.Row="0"
-               GotFocus="UIElement_LostFocus"
-               Visibility="Hidden"/>
+        <Image Source="{StaticResource _1614719423_80_p_foni_dlya_artov_103DrawingImage}"
+               Stretch="Fill"
+               Grid.RowSpan="9"/>
 
         <!--Поле для ввода логина-->
         <TextBox x:Name="login_txt" 

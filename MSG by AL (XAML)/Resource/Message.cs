@@ -29,5 +29,7 @@ namespace MSG_by_AL__XAML_.Resource
         //Свойство для хранения заливки фона сообщения (Background)
         public Brush backGround { get; set; }
 
+        //Имя отправителя
+        public string User_Name { get; set; }
     }
 }
