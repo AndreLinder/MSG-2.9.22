@@ -40,7 +40,7 @@ namespace MSG_by_AL__XAML_
                         IDuser = int.Parse(values[0]);
                         NickName = values[1];
                         //Открываем основное окно и передаём в него сведения об авторизованном пользователе
-                        ChatsPage chatpage = new ChatsPage(IDuser, NickName, values[3]);
+                        ChatsPage chatpage = new ChatsPage(IDuser, NickName, values[3], values[4]);
                         chatpage.Show();
                         this.Close();
                     }

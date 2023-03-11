@@ -11,6 +11,8 @@
                 <ResourceDictionary x:Name="Chat" Source="Resource/Chat.xaml"/>
                 <ResourceDictionary x:Name="Contact" Source="Resource/Contact.xaml"/>
                 <ResourceDictionary x:Name="Logout" Source="Resource/Logout.xaml"/>
+                <ResourceDictionary x:Name="Send" Source="Resource/Send.xaml"/>
+                <ResourceDictionary x:Name="password" Source="Resource/password.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

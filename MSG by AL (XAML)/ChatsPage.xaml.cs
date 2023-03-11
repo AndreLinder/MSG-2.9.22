@@ -10,6 +10,8 @@ using MSG_by_AL__XAML_.Resource;
 using Microsoft.Toolkit.Uwp.Notifications;
 using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.WebUI;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace MSG_by_AL__XAML_
 {
@@ -50,12 +52,14 @@ namespace MSG_by_AL__XAML_
         public static int MessageCount = -1;
         public static bool IsPrivate_Chat = true;
 
-        public ChatsPage(int ID, string nick, string guID)
+        public ChatsPage(int ID, string nick, string guID, string username)
         {
             IDuser = ID;
             NickName = nick;
+            name = username;
             InitializeComponent();
             Clear_List();
+            User_Name.Content = name;
             User_Nick.Content= "@"+nick;
             Update_Dialog_List();
             Update_Friend_List();
@@ -904,6 +908,7 @@ namespace MSG_by_AL__XAML_
             FriendWindow.Visibility= Visibility.Hidden;
             SearchWindow.Visibility= Visibility.Hidden;
             ButtonBlurEffect.Visibility= Visibility.Hidden;
+            ChangePassword.Visibility = Visibility.Hidden;
             Show_Hidden_Menu(sender, e);
         }
 
@@ -980,6 +985,7 @@ namespace MSG_by_AL__XAML_
 
         }
 
+        //Добавить пользователя в группу
         private void AddInGroupChat(object sender, RoutedEventArgs e)
         {
             int id = int.Parse(((Button)sender).Content.ToString());
@@ -993,6 +999,40 @@ namespace MSG_by_AL__XAML_
                 }
             }
             List<List<string>> values = ServerConnect.RecieveBigDataFromDB("22#", id + "~" + IDChat + "~");
+        }
+
+        //Показываем меню для смены пароля
+        private void Show_Change_Password(object sender, RoutedEventArgs e)
+        {
+            ChangePassword.Visibility = Visibility.Visible;
+        }
+
+        //Сохранить новый пароль
+        private void Save_Password_Click(object sender, RoutedEventArgs e)
+        {
+            if (New_Password.Password == RepNew_Password.Password)
+            {
+                MD5 md5 = MD5.Create();
+                try
+                {
+                    List<List<string>> values = ServerConnect.RecieveBigDataFromDB("23#", IDuser + "~" + Encoding.UTF8.GetString(md5.ComputeHash(Encoding.UTF8.GetBytes(Old_Password.Password))) + "~" + Encoding.UTF8.GetString(md5.ComputeHash(Encoding.UTF8.GetBytes(New_Password.Password))) + "~");
+
+                    if (values[0][0] == "OK")
+                    {
+                        MessageBox.Show("Пароль успешно изменен!");
+                        ChangePassword.Visibility = Visibility.Hidden;
+                    }
+                    else MessageBox.Show("Старый пароль неверный!");
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message);
+                }
+            }
+            else
+            {
+                MessageBox.Show("Новые пароли не совпадают!");
+            }
         }
     }
 }

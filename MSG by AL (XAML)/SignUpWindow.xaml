@@ -74,7 +74,8 @@
                      Grid.Row="6" 
                      Margin="71,10.8,70.4,10.6"
                      MaxWidth="400"
-                     TabIndex="2"/>
+                     TabIndex="2"
+                     Cursor="IBeam"/>
         <PasswordBox x:Name="password_repeat" 
                      Style="{StaticResource PasswordBoxStyle}"  
                      BorderThickness="0"
@@ -87,7 +88,8 @@
                      Grid.Row="8" 
                      Margin="71,10.8,70.4,10.6"
                      MaxWidth="400"
-                     TabIndex="3"/>
+                     TabIndex="3"
+                     Cursor="IBeam"/>
         <TextBox x:Name="name_text" 
                  Style="{StaticResource TextBoxStyle}" 
                  TextWrapping="Wrap" 
@@ -98,7 +100,8 @@
                  Margin="71,10.4,70.4,11"
                  MaxWidth="400"
                  TabIndex="0"
-                 IsTabStop="True"/>
+                 IsTabStop="True"
+                 Cursor="IBeam"/>
         <Label Content="Имя пользователя" 
                Style="{StaticResource LabelStyle}" 
                FontSize="14" 
@@ -142,7 +145,8 @@
                 Grid.Row="9"
                 MaxWidth="400" 
                 Margin="71,10,70.4,0"
-                TabIndex="5"/>
+                TabIndex="5"
+                Cursor="Hand"/>
         <Label Content="Логин" 
                Style="{StaticResource LabelStyle}" 
                FontSize="14" 
@@ -161,6 +165,7 @@
                  Grid.Row="4" 
                  Margin="71,10.6,70.4,10.8"
                  MaxWidth="400"
-                 TabIndex="1"/>
+                 TabIndex="1"
+                 Cursor="IBeam"/>
     </Grid>
 </Window>

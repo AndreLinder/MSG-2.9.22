@@ -70,7 +70,8 @@
                  VerticalAlignment="Center"
                  Grid.Row="3" 
                  Margin="69,3.2,69.2,3.2"
-                 GotFocus="UIElement_LostFocus"/>
+                 GotFocus="UIElement_LostFocus"
+                 Cursor="IBeam"/>
 
         <!--Поле для ввода пароля-->
         <PasswordBox x:Name="password_txt" 
@@ -85,7 +86,8 @@
                      Foreground="{StaticResource TextColor1}" 
                      Grid.Row="5" 
                      Margin="69,3,69.2,2.4"
-                     GotFocus="UIElement_LostFocus"/>
+                     GotFocus="UIElement_LostFocus"
+                     Cursor="IBeam"/>
 
         <!--Просто label'ы-->
         <Label Content="Логин" 
@@ -125,7 +127,8 @@
                 Click="Login_Click"
                 Grid.Row="6" 
                 Margin="69,0,69.2,0.2"
-                GotFocus="UIElement_LostFocus"/>
+                GotFocus="UIElement_LostFocus"
+                Cursor="Hand"/>
 
         <!--Кнопка для регистрации пользователя-->
         <Button Content="Зарегистрироваться" 
@@ -136,7 +139,8 @@
                 MaxWidth="400"
                 Click="SignUp_Click"
                 Grid.Row="7"
-                GotFocus="UIElement_LostFocus"/>
+                GotFocus="UIElement_LostFocus"
+                Cursor="Hand"/>
 
         <Grid x:Name="Notification"
               Grid.Row="8"

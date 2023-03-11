@@ -29,13 +29,6 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <!--<Image
-               Grid.ColumnSpan="1"
-               Grid.RowSpan="1" Stretch="UniformToFill">
-            <Image.Source>
-                <BitmapImage UriSource="Resource/1.jpg"/>
-            </Image.Source>
-        </Image>-->
         <Image Source="{StaticResource _1614719423_80_p_foni_dlya_artov_103DrawingImage}"
                Stretch="UniformToFill"
                Grid.RowSpan="1"/>
@@ -67,6 +60,8 @@
                                Height="30"/>
                 <RowDefinition MaxHeight="40"
                                Height="30"/>
+                <RowDefinition MaxHeight="40"
+                               Height="30"/> 
                 <RowDefinition/>
                 <RowDefinition MaxHeight="40"
                                Height="30"/>
@@ -150,6 +145,28 @@
                         Grid.Row="3">
             </Button>
 
+            <!--Изменить пароль-->
+            <Grid Grid.Row="4"
+                  Height="30">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="30"></ColumnDefinition>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                
+            <!--Кнопка для изменения пароля, имени или логина-->
+                <Button Style="{StaticResource ButtonStyleMenu}"
+                    Content="Изменить пароль"
+                    Click="Show_Change_Password"
+                        Height="30"
+                        VerticalAlignment="Top"
+                        Grid.ColumnSpan="2">
+                </Button>
+                <!--Иконка кнопки-->
+                <Image Grid.Column="0"
+                       Source="{StaticResource password}"
+                       Opacity="0.8"
+                       Margin="3"/>
+            </Grid>
 
             <!--Кнопка "выйти"-->
 
@@ -159,7 +176,7 @@
                     Click="Exit_Account"
                         Height="30"
                         VerticalAlignment="Bottom"
-                        Grid.Row="6">
+                        Grid.Row="7">
             </Button>
         </Grid>
 
@@ -291,7 +308,8 @@
                          Width="300"
                          Style="{StaticResource TextBoxStyle}"
                          GotFocus="Show_Search_Menu"
-                         Grid.ColumnSpan="2">
+                         Grid.ColumnSpan="2"
+                         Cursor="IBeam">
                 </TextBox>
 
                 <Button x:Name="Show_Menu"
@@ -302,7 +320,8 @@
                     Grid.Column="0"
                         Opacity="0.6"
                         Background="Transparent"
-                        Click="Show_Hidden_Menu">
+                        Click="Show_Hidden_Menu"
+                        Cursor="Hand">
                 </Button>
             </Grid>
 
@@ -886,6 +905,126 @@
                 </Grid>
             </Grid>
 
+            
+            <!--Окно для изменения информации-->
+            <Grid x:Name="ChangePassword"
+              Grid.Row="1"
+              HorizontalAlignment="Center"
+              VerticalAlignment="Center"
+              Visibility="Hidden"
+              Panel.ZIndex="1"
+              Background="Transparent">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition MaxWidth="300"
+                                  MinWidth="0">
+                    </ColumnDefinition>
+                    <ColumnDefinition MinWidth="400">
+                    </ColumnDefinition>
+                    <ColumnDefinition MaxWidth="300"
+                                  MinWidth="0">
+                    </ColumnDefinition>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="300"></RowDefinition>
+                </Grid.RowDefinitions>
+
+                <!--Фон-->
+                <Border
+                    CornerRadius="10"
+                    Grid.Column="1"
+                    Grid.Row="1"
+                    GotFocus="UIElement_LostFocus">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="#FF641C3F"/>
+                            <GradientStop Color="#FFEE4F9A" Offset="0.3"/>
+                            <GradientStop Color="#FFF6A5A1" Offset="0.5"/>
+                            <GradientStop Color="#FF803178" Offset="0.7"/>
+                            <GradientStop Color="#FF262161" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.OpacityMask>
+                        <VisualBrush>
+                            <VisualBrush.Visual>
+                                <Border Background="Black"
+                                        CornerRadius="{Binding CornerRadius, RelativeSource={RelativeSource FindAncestor, AncestorType=Border}}"
+                                        Width="{Binding ActualWidth, RelativeSource={RelativeSource FindAncestor, AncestorType=Border}}"
+                                        Height="{Binding ActualHeight, RelativeSource={RelativeSource FindAncestor, AncestorType=Border}}">
+                                </Border>
+                            </VisualBrush.Visual>
+                        </VisualBrush>
+                    </Border.OpacityMask>
+
+                    <Image Source="{StaticResource _1614719423_80_p_foni_dlya_artov_103DrawingImage}"
+                           Stretch="UniformToFill"/>
+                </Border>
+
+                
+              
+
+                    <!--Изменение пароля-->
+                    <Grid Grid.RowSpan="2"
+                          Grid.Column="1"
+                          Margin="8">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition/>
+                            <RowDefinition Height="20"/>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <Label Content="Текущий пароль:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="13"
+                       HorizontalAlignment="Center"
+                       Grid.Row="0"/>
+                        <Label Content="Новый пароль:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="13"
+                       HorizontalAlignment="Center"
+                       Grid.Row="2"/>
+                        <Label Content="Повторите пароль:"
+                       Style="{StaticResource LabelStyle}"
+                       FontSize="13"
+                       HorizontalAlignment="Center"
+                       Grid.Row="4"/>
+                        <PasswordBox x:Name="Old_Password"
+                             Style="{StaticResource PasswordBoxStyle}"
+                             Grid.Row="1"
+                             Height="28"
+                                     HorizontalContentAlignment="Center">
+                        </PasswordBox>
+                        <PasswordBox x:Name="New_Password"
+                             Style="{StaticResource PasswordBoxStyle}"
+                             Grid.Row="3"
+                             Height="28"
+                                     HorizontalContentAlignment="Center">
+                        </PasswordBox>
+                    <PasswordBox x:Name="RepNew_Password"
+                             Style="{StaticResource PasswordBoxStyle}"
+                             Grid.Row="5"
+                             Height="28"
+                                 HorizontalContentAlignment="Center">
+                    </PasswordBox>
+                    <Button x:Name="Save_Password"
+                            Style="{StaticResource ButtonStyle}"
+                            Content="Сохранить"
+                            Grid.Row="6"
+                            Grid.ColumnSpan="2"
+                            Height="20"
+                            VerticalAlignment="Bottom"
+                            Margin="10"
+                            Width="150" Click="Save_Password_Click">
+                    </Button>
+
+                </Grid>
+            </Grid>
+
             <!--Главное окно с чатами и активным диалогом-->
             <Grid Grid.Row="1"
               Panel.ZIndex="0"
@@ -1211,7 +1350,22 @@
                         ToolTip="Поле для ввода сообщения"
                         Grid.Column="0"
                          Margin="5,0"
-                         KeyDown="Send_Message_Enter"/>
+                         KeyDown="Send_Message_Enter"
+                             Cursor="IBeam"/>
+
+                    <Border Grid.Column="1"
+                            Background="{StaticResource TextColor2}"
+                            CornerRadius="15"
+                            Margin="5"
+                            Opacity="0.75"/>
+                    <Image Grid.Column="1"
+                           VerticalAlignment="Top"
+                           HorizontalAlignment="Center"
+                           Source="{StaticResource send_03_svgrepo_comDrawingImage}"
+                           Height="40"
+                           Width="40"
+                           Margin="13,13"
+                           Opacity="0.75"/>
 
                     <!--Кнопка отправки сообщения-->
                     <Button x:Name="Send_Message" 
@@ -1219,7 +1373,9 @@
                         Content="Отправить" 
                         Height="35"
                         HorizontalAlignment="Center" 
-                        VerticalAlignment="Center" 
+                        VerticalAlignment="Bottom"
+                            Background="Transparent"
+                            FontSize="14"
                         Width="90" 
                         Click="Send_Message_Click"
                         ToolTip="Отправить собщение"
@@ -1274,58 +1430,7 @@
                 Source="Icons/BigProfile.ico">
             </Image>
 
-            <!--Изменение пароля-->
-            <Grid Grid.Row="1"
-                  Grid.Column="2">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
-                </Grid.ColumnDefinitions>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition/>
-                    <RowDefinition Height="20"/>
-                    <RowDefinition/>
-                    <RowDefinition/>
-                </Grid.RowDefinitions>
-                <Label Content="Текущий пароль:"
-                       Style="{StaticResource LabelStyle}"
-                       FontSize="15"
-                       HorizontalAlignment="Center"
-                       Grid.Row="0"/>
-                <Label Content="Новый пароль:"
-                       Style="{StaticResource LabelStyle}"
-                       FontSize="15"
-                       HorizontalAlignment="Center"
-                       Grid.Row="2"/>
-                <Label Content="Повторите пароль:"
-                       Style="{StaticResource LabelStyle}"
-                       FontSize="15"
-                       HorizontalAlignment="Center"
-                       Grid.Row="4"/>
-                <PasswordBox x:Name="OldPassword"
-                             Style="{StaticResource PasswordBoxStyle}"
-                             Grid.Row="1"
-                             Height="28">
-                </PasswordBox>
-                <PasswordBox x:Name="NewPassword"
-                             Style="{StaticResource PasswordBoxStyle}"
-                             Grid.Row="3"
-                             Height="28">
-                </PasswordBox>
-                <PasswordBox x:Name="RepNewPassword"
-                             Style="{StaticResource PasswordBoxStyle}"
-                             Grid.Row="5"
-                             Height="28">
-                </PasswordBox>
-                <Button x:Name="Save_Password"
-                        Style="{StaticResource ButtonStyle}"
-                        Content="Сохранить"
-                        Grid.Row="6"
-                        Height="28">
-                </Button>
-            </Grid>
+         
 
             <!--Информация о пользователе-->
             <Grid Grid.Row="1"
