@@ -3,5 +3,5 @@
   <DrawingGroup x:Key="icons8_c________________DrawingGroup" ClipGeometry="M0,0 V30 H30 V0 H0 Z">
     <GeometryDrawing Brush="#FFFFFFFF" Geometry="{StaticResource icons8_c________________Geometry}" />
   </DrawingGroup>
-  <DrawingImage x:Key="icons8_c________________DrawingImage" Drawing="{StaticResource icons8_c________________DrawingGroup}" />
+  <DrawingImage x:Key="chat_ico" Drawing="{StaticResource icons8_c________________DrawingGroup}" />
 </ResourceDictionary>

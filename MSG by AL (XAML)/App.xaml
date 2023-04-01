@@ -7,12 +7,13 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Dictionary.xaml"/>
-                <ResourceDictionary x:Name="BACK" Source="Resource/1.xaml"/>
-                <ResourceDictionary x:Name="Chat" Source="Resource/Chat.xaml"/>
-                <ResourceDictionary x:Name="Contact" Source="Resource/Contact.xaml"/>
-                <ResourceDictionary x:Name="Logout" Source="Resource/Logout.xaml"/>
-                <ResourceDictionary x:Name="Send" Source="Resource/Send.xaml"/>
-                <ResourceDictionary x:Name="password" Source="Resource/password.xaml"/>
+                <ResourceDictionary x:Name="BACK" Source="Icons-XAML/Background.xaml"/>
+                <ResourceDictionary x:Name="Chat" Source="Icons-XAML/Chat.xaml"/>
+                <ResourceDictionary x:Name="Contact" Source="Icons-XAML/Contact.xaml"/>
+                <ResourceDictionary x:Name="Logout" Source="Icons-XAML/Logout.xaml"/>
+                <ResourceDictionary x:Name="Send" Source="Icons-XAML/Send.xaml"/>
+                <ResourceDictionary x:Name="password" Source="Icons-XAML/password.xaml"/>
+                <ResourceDictionary x:Name="file" Source="Icons-XAML/File.xaml"/>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Application.Resources>

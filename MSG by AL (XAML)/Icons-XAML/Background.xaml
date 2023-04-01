@@ -600,5 +600,5 @@
       <GeometryDrawing Brush="#FF2E2364" Geometry="{StaticResource _1614719423_80_p_foni_dlya_artov_103Geometry149}" />
     </DrawingGroup>
   </DrawingGroup>
-  <DrawingImage x:Key="_1614719423_80_p_foni_dlya_artov_103DrawingImage" Drawing="{StaticResource _1614719423_80_p_foni_dlya_artov_103DrawingGroup}" />
+  <DrawingImage x:Key="background" Drawing="{StaticResource _1614719423_80_p_foni_dlya_artov_103DrawingGroup}" />
 </ResourceDictionary>

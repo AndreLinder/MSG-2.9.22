@@ -1,0 +1,25 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Geometry x:Key="send_03_svgrepo_comGeometry">F1 M24,24z M0,0z M10.5004,11.9998L5.00043,11.9998 M4.91577,12.2913L2.58085,19.266C2.39742,19.8139 2.3057,20.0879 2.37152,20.2566 2.42868,20.4031 2.55144,20.5142 2.70292,20.5565 2.87736,20.6052 3.14083,20.4866 3.66776,20.2495L20.3792,12.7293C20.8936,12.4979 21.1507,12.3822 21.2302,12.2214 21.2993,12.0817 21.2993,11.9179 21.2302,11.7782 21.1507,11.6174 20.8936,11.5017 20.3792,11.2703L3.66193,3.74751C3.13659,3.51111 2.87392,3.39291 2.69966,3.4414 2.54832,3.48351 2.42556,3.59429 2.36821,3.74054 2.30216,3.90893 2.3929,4.18231 2.57437,4.72906L4.91642,11.7853C4.94759,11.8792 4.96317,11.9262 4.96933,11.9742 4.97479,12.0168 4.97473,12.0599 4.96916,12.1025 4.96289,12.1506 4.94718,12.1975 4.91577,12.2913z</Geometry>
+  <DrawingGroup x:Key="send_03_svgrepo_comDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+    <DrawingGroup Opacity="1">
+      <GeometryDrawing Geometry="{StaticResource send_03_svgrepo_comGeometry}">
+        <GeometryDrawing.Pen>
+          <Pen Brush="#FFFFFFFF" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+        </GeometryDrawing.Pen>
+      </GeometryDrawing>
+    </DrawingGroup>
+  </DrawingGroup>
+  <DrawingImage x:Key="send_ico" Drawing="{StaticResource send_03_svgrepo_comDrawingGroup}" />
+  <Geometry x:Key="flat_mountainsGeometry1">F1 M1600,900z M0,0z M957,450L957,450 539,900 1396,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry2">F1 M1600,900z M0,0z M957,450L957,450 872.9,900 1396,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry3">F1 M1600,900z M0,0z M-60,900L-60,900 398,662 816,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry4">F1 M1600,900z M0,0z M337,900L337,900 398,662 816,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry5">F1 M1600,900z M0,0z M1203,546L1203,546 1552,900 876,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry6">F1 M1600,900z M0,0z M1203,546L1203,546 1552,900 1162,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry7">F1 M1600,900z M0,0z M641,695L641,695 886,900 367,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry8">F1 M1600,900z M0,0z M587,900L587,900 641,695 886,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry9">F1 M1600,900z M0,0z M1710,900L1710,900 1401,632 1096,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry10">F1 M1600,900z M0,0z M1710,900L1710,900 1401,632 1365,900z</Geometry>
+  <Geometry x:Key="flat_mountainsGeometry11">F1 M1600,900z M0,0z M1210,900L1210,900 971,687 725,900z</Geometry>
+    <Geometry x:Key="flat_mountainsGeometry12">F1 M1600,900z M0,0z M943,900L943,900 1210,900 971,687z</Geometry>
+</ResourceDictionary>

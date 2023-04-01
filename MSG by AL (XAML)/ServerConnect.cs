@@ -4,6 +4,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Collections.Generic;
 using System.Windows;
+using System.Threading.Tasks;
+using System.Security.Cryptography;
+using Windows.Foundation.Collections;
+using System.IO;
 
 namespace MSG_by_AL__XAML_
 {
@@ -194,6 +198,57 @@ namespace MSG_by_AL__XAML_
             }
             //Возвращаем список значений для дальнейших действий
             return values;
+        }
+
+        public static string Send_File(string number_command, string short_file_name, string file_name)
+        {
+            string message = "ERROR";
+            FileStream file = new FileStream(file_name, FileMode.Open);
+            long i = file.Length;
+            try
+            {
+                //Создаем удаленную конечную точку сервера
+                IPEndPoint ipPoint = new IPEndPoint(IP, 8004);
+
+
+                //Определяем объект сокета, для подключения к серверу по удаленной конечной точке
+                Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+                //Подключаемся к удаленному хосту
+                socket.Connect(ipPoint);
+                byte[] data = Encoding.UTF8.GetBytes(number_command + "#" +short_file_name.Length + "#" + i + "#" + short_file_name);
+                socket.Send(data);
+
+
+                
+                NetworkStream network = new NetworkStream(socket);
+
+                file.CopyTo(network);
+                //network.Close();
+                file.Close();
+
+
+                // получаем ответ
+                data = new byte[8192]; // буфер для ответа
+                StringBuilder builder = new StringBuilder();
+                int bytes = 0; // количество полученных байт
+                //bytes = socket.Receive(data, data.Length, 0);
+                builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
+
+                // закрываем сокет
+                socket.Close();
+
+
+                /*Получаем данные от сервера в виде строки: value1~value2~...valueN~ 
+                 Обрабатываем данную строку, чтобы разделить значения и добавить их в список*/
+                message = builder.ToString();
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+
+            return message;
         }
     }
 }

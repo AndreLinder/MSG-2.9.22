@@ -8,5 +8,5 @@
   <DrawingGroup x:Key="icons8_________DrawingGroup" ClipGeometry="M0,0 V26 H26 V0 H0 Z">
     <GeometryDrawing Brush="#FFFFFFFF" Geometry="{StaticResource icons8_________Geometry}" />
   </DrawingGroup>
-  <DrawingImage x:Key="icons8_________DrawingImage" Drawing="{StaticResource icons8_________DrawingGroup}" />
+  <DrawingImage x:Key="contact_ico" Drawing="{StaticResource icons8_________DrawingGroup}" />
 </ResourceDictionary>

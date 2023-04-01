@@ -1,0 +1,15 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Geometry x:Key="file_upload_svgrepo_comGeometry">F1 M24,24z M0,0z M12,18L12,12 M12,12L9,14 M12,12L15,14 M13,3.00087C12.9045,3,12.7973,3,12.6747,3L8.2002,3C7.08009,3 6.51962,3 6.0918,3.21799 5.71547,3.40973 5.40973,3.71547 5.21799,4.0918 5,4.51962 5,5.08009 5,6.2002L5,17.8002C5,18.9203 5,19.4801 5.21799,19.9079 5.40973,20.2842 5.71547,20.5905 6.0918,20.7822 6.51921,21 7.079,21 8.19694,21L15.8031,21C16.921,21 17.48,21 17.9074,20.7822 18.2837,20.5905 18.5905,20.2842 18.7822,19.9079 19,19.4805 19,18.9215 19,17.8036L19,9.32568C19,9.20296,19,9.09561,18.9991,9 M13,3.00087C13.2856,3.00347 13.4663,3.01385 13.6388,3.05526 13.8429,3.10425 14.0379,3.18526 14.2168,3.29492 14.4186,3.41857 14.5918,3.59182 14.9375,3.9375L18.063,7.06298C18.4089,7.40889 18.5809,7.58136 18.7046,7.78319 18.8142,7.96214 18.8953,8.15726 18.9443,8.36133 18.9857,8.53376 18.9963,8.71451 18.9991,9 M13,3.00087L13,5.8C13,6.9201 13,7.47977 13.218,7.90759 13.4097,8.28392 13.7155,8.59048 14.0918,8.78223 14.5192,9 15.079,9 16.1969,9L18.9991,9 M18.9991,9L19.0002,9</Geometry>
+  <DrawingGroup x:Key="file_upload_svgrepo_comDrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+    <DrawingGroup Opacity="1">
+      <DrawingGroup Opacity="1">
+        <GeometryDrawing Geometry="{StaticResource file_upload_svgrepo_comGeometry}">
+          <GeometryDrawing.Pen>
+            <Pen Brush="#FFFFFFFF" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" MiterLimit="1" />
+          </GeometryDrawing.Pen>
+        </GeometryDrawing>
+      </DrawingGroup>
+    </DrawingGroup>
+  </DrawingGroup>
+    <DrawingImage x:Key="file_ico" Drawing="{StaticResource file_upload_svgrepo_comDrawingGroup}" />
+</ResourceDictionary>

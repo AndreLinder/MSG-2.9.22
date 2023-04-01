@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Media;
+using System.Windows;
 
 namespace MSG_by_AL__XAML_.Resource
 {
@@ -31,5 +32,9 @@ namespace MSG_by_AL__XAML_.Resource
 
         //Имя отправителя
         public string User_Name { get; set; }
+
+        public Visibility visibility { get; set; }
+
+        public GridLength height { get; set; }
     }
 }

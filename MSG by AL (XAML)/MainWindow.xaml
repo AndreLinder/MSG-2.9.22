@@ -55,7 +55,7 @@
             </Image.Source>
             </Image>-->
 
-        <Image Source="{StaticResource _1614719423_80_p_foni_dlya_artov_103DrawingImage}"
+        <Image Source="{StaticResource background}"
                Stretch="Fill"
                Grid.RowSpan="9"/>
 

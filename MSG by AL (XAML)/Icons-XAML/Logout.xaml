@@ -1,0 +1,26 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+  <Geometry x:Key="log_out_icon_197724Geometry1">F1 M24,24z M0,0z M9,21L5,21A2,2,0,0,1,3,19L3,5A2,2,0,0,1,5,3L9,3</Geometry>
+  <Geometry x:Key="log_out_icon_197724Geometry2">F1 M24,24z M0,0z M16,17L16,17 21,12 16,7</Geometry>
+  <DrawingGroup x:Key="log_out_icon_197724DrawingGroup" ClipGeometry="M0,0 V24 H24 V0 H0 Z">
+    <GeometryDrawing Geometry="{StaticResource log_out_icon_197724Geometry1}">
+      <GeometryDrawing.Pen>
+        <Pen Brush="White" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+      </GeometryDrawing.Pen>
+    </GeometryDrawing>
+    <GeometryDrawing Geometry="{StaticResource log_out_icon_197724Geometry2}">
+      <GeometryDrawing.Pen>
+        <Pen Brush="White" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+      </GeometryDrawing.Pen>
+    </GeometryDrawing>
+    <GeometryDrawing>
+      <GeometryDrawing.Pen>
+        <Pen Brush="White" Thickness="2" StartLineCap="Round" EndLineCap="Round" LineJoin="Round" />
+      </GeometryDrawing.Pen>
+      <GeometryDrawing.Geometry>
+        <LineGeometry StartPoint="21,12" EndPoint="9,12" />
+      </GeometryDrawing.Geometry>
+    </GeometryDrawing>
+  </DrawingGroup>
+  <DrawingImage x:Key="log_out_ico" Drawing="{StaticResource log_out_icon_197724DrawingGroup}" />
+    <Geometry x:Key="icons8_________Geometry">F1 M26,26z M0,0z M16.5625,15.898438C16.402344,15.847656,15.398438,15.394531,16.027344,13.484375L16.019531,13.484375C17.65625,11.800781 18.90625,9.085938 18.90625,6.414063 18.90625,2.308594 16.175781,0.15625 13,0.15625 9.824219,0.15625 7.109375,2.308594 7.109375,6.414063 7.109375,9.097656 8.351563,11.820313 10,13.503906 10.640625,15.1875 9.492188,15.8125 9.253906,15.898438 5.929688,17.101563 2.03125,19.292969 2.03125,21.457031 2.03125,22.039063 2.03125,21.6875 2.03125,22.269531 2.03125,25.214844 7.742188,25.886719 13.03125,25.886719 18.328125,25.886719 23.96875,25.214844 23.96875,22.269531 23.96875,21.6875 23.96875,22.039063 23.96875,21.457031 23.96875,19.230469 20.050781,17.054688 16.5625,15.898438z</Geometry>
+</ResourceDictionary>
