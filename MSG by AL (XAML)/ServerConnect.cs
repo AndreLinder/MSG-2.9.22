@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Security.Cryptography;
 using Windows.Foundation.Collections;
 using System.IO;
+using Windows.Media.Protection.PlayReady;
 
 namespace MSG_by_AL__XAML_
 {
@@ -203,8 +204,7 @@ namespace MSG_by_AL__XAML_
         public static string Send_File(string number_command, string short_file_name, string file_name)
         {
             string message = "ERROR";
-            FileStream file = new FileStream(file_name, FileMode.Open);
-            long i = file.Length;
+            
             try
             {
                 //Создаем удаленную конечную точку сервера
@@ -215,23 +215,30 @@ namespace MSG_by_AL__XAML_
                 Socket socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
                 //Подключаемся к удаленному хосту
                 socket.Connect(ipPoint);
-                byte[] data = Encoding.UTF8.GetBytes(number_command + "#" +short_file_name.Length + "#" + i + "#" + short_file_name);
-                socket.Send(data);
 
+                byte[] fileNameBytes = Encoding.UTF8.GetBytes(short_file_name);
+                int fileNameLength = fileNameBytes.Length;
 
-                
-                NetworkStream network = new NetworkStream(socket);
+                byte[] fileBytes = File.ReadAllBytes(file_name);
+                int fileLength = fileBytes.Length;
 
-                file.CopyTo(network);
-                //network.Close();
-                file.Close();
+                using (NetworkStream stream = new NetworkStream(socket))
+                {
+                    BinaryWriter writer = new BinaryWriter(stream);
 
+                    writer.Write(fileNameLength);
+                    writer.Write(fileNameBytes);
+                    writer.Write(fileLength);
+                    stream.Write(fileBytes, 0, fileLength);
+                    writer.Flush();
+                }
 
                 // получаем ответ
-                data = new byte[8192]; // буфер для ответа
+                byte[] data = new byte[256]; // буфер для ответа
                 StringBuilder builder = new StringBuilder();
                 int bytes = 0; // количество полученных байт
-                //bytes = socket.Receive(data, data.Length, 0);
+                bytes = socket.Receive(data, data.Length, 0);
+
                 builder.Append(Encoding.UTF8.GetString(data, 0, bytes));
 
                 // закрываем сокет
@@ -241,6 +248,7 @@ namespace MSG_by_AL__XAML_
                 /*Получаем данные от сервера в виде строки: value1~value2~...valueN~ 
                  Обрабатываем данную строку, чтобы разделить значения и добавить их в список*/
                 message = builder.ToString();
+                MessageBox.Show(message);
                 
             }
             catch (Exception ex)
