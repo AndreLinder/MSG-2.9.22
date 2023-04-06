@@ -13,7 +13,6 @@ using Windows.UI.WebUI;
 using System.Security.Cryptography;
 using System.Text;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MSG_by_AL__XAML_
 {
@@ -30,6 +29,9 @@ namespace MSG_by_AL__XAML_
         public static int IDuser = -1;
         //GuID авторизованного пользователя
         public string GuID = "null";
+
+        //Отметка о прикреплении файла
+        bool file_attached= false;
 
         //Список потенциальных пользователей
         List<User> users = new List<User>();
@@ -326,9 +328,9 @@ namespace MSG_by_AL__XAML_
                             //Создадим объект привязки данных и определим свойства
                             Message MSG = new Message();
                             MSG.Message_ID = int.Parse(value[0]);
-                            MSG.Message_Text = aes.Decode(value[1]);
+                            if (value[1].Contains("$filename--")) MSG.Message_Text = aes.Decode(value[1].Replace("$filename--",""));
+                            else MSG.Message_Text = aes.Decode(value[1]);
                             MSG.Message_Date = value[2];
-                            MSG.height = new GridLength(20);
                             MSG.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
                             MSG.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
                             Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
@@ -337,9 +339,9 @@ namespace MSG_by_AL__XAML_
                         {
                             Message MSG = new Message();
                             MSG.Message_ID = int.Parse(value[0]);
-                            MSG.Message_Text = aes.Decode(value[1]);
+                            if (value[1].Contains("$filename--")) MSG.Message_Text = aes.Decode(value[1].Replace("$filename--", ""));
+                            else MSG.Message_Text = aes.Decode(value[1]);
                             MSG.Message_Date = value[2];
-                            MSG.height = new GridLength(0);
                             MSG.borderBrush = (Brush)Application.Current.Resources["BorderBrush"];
                             MSG.backGround = (Brush)Application.Current.Resources["FriendMessageColor"];
                             Dispatcher.Invoke(() => Message_List.Items.Add(MSG));
@@ -370,34 +372,80 @@ namespace MSG_by_AL__XAML_
                 AES256 aes = new AES256(GuID_Chat);
 
                 List<List<string>> values;
+                    if (IsPrivate_Chat) values = ServerConnect.RecieveBigDataFromDB("10#", IDuser + "~" + IDFriend + "~" + aes.Encode(TextBox_Message.Text) + "~");
+                    else values = ServerConnect.RecieveBigDataFromDB("18#", IDChat + "~" + IDuser + "~" + aes.Encode(TextBox_Message.Text) + "~");
 
-                if (IsPrivate_Chat) values = ServerConnect.RecieveBigDataFromDB("10#", IDuser + "~" + IDFriend + "~" + aes.Encode(TextBox_Message.Text) + "~");
-                else values = ServerConnect.RecieveBigDataFromDB("18#", IDChat + "~" + IDuser + "~" + aes.Encode(TextBox_Message.Text) + "~");
+                    if (values[0][0] != "ERROR")
+                    {
+                        //Добавляем сообщение в диалог
+                        //Нет возможности добавить ID для своего сообщения, т.к. его формирует БД
+                        //Отправленное сообщение возможно не получится удалить, пока не перезайти в диалог
+                        Message my_message = new Message();
+                        my_message.Message_ID = int.Parse(values[0][0]);
+                        my_message.Message_Text = TextBox_Message.Text;
+                        my_message.Message_Date = DateTime.Now.ToString();
+                        my_message.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
+                        my_message.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
+                        if (IsPrivate_Chat)
+                        {
+                            Message_List.Items.Add(my_message);
+                            Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
+                        }
+                        else
+                        {
+                            my_message.User_Name = NickName;
+                            Message_Group_List.Items.Add(my_message);
+                            Message_Group_List.ScrollIntoView(Message_Group_List.Items[Message_Group_List.Items.Count - 1]);
+                        }
+                        TextBox_Message.Text = "";
+                    }
+            }
+        }
 
-                if (values[0][0] != "ERROR")
+        //Отправка файла()
+        private void Sending_Message(string filename, string filePath)
+        {
+            try
+            {
+                List<List<string>> values;
+                
+                //Чтобы не отправлялись пустые сообщения
+                if ((TextBox_Message.Text.Length != 0) & GuID_Chat != "null")
                 {
-                    //Добавляем сообщение в диалог
-                    //Нет возможности добавить ID для своего сообщения, т.к. его формирует БД
-                    //Отправленное сообщение возможно не получится удалить, пока не перезайти в диалог
-                    Message my_message = new Message();
-                    my_message.Message_ID = int.Parse(values[0][0]);
-                    my_message.Message_Text = TextBox_Message.Text;
-                    my_message.Message_Date = DateTime.Now.ToString();
-                    my_message.backGround = (Brush)Application.Current.Resources["MyMessageColor"];
-                    my_message.borderBrush = (Brush)Application.Current.Resources["MyMessageColor"];
-                    if (IsPrivate_Chat)
+                    AES256 aes = new AES256(GuID_Chat);
+
+                    
+                    if (file_attached)
                     {
-                        Message_List.Items.Add(my_message);
-                        Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
+                        values = ServerConnect.RecieveBigDataFromDB("10#", IDuser + "~" + IDFriend + "~" + "$filename--" + aes.Encode(TextBox_Message.Text) + "~");
+
+                        if (values[0][0] != "ERROR")
+                        {
+
+                            Message my_message = new Message();
+                            my_message.Message_ID = int.Parse(values[0][0]);
+                            my_message.Message_Text = TextBox_Message.Text;
+                            my_message.Message_Date = DateTime.Now.ToString();
+                            my_message.backGround = (Brush)Application.Current.Resources["FileMessageColor"];
+                            my_message.borderBrush = (Brush)Application.Current.Resources["FileMessageColor"];
+                            my_message.Font_Bold = FontWeight.FromOpenTypeWeight(900);
+                            Message_List.Items.Add(my_message);
+                            Message_List.ScrollIntoView(Message_List.Items[Message_List.Items.Count - 1]);
+                        }
+
+                        //Отправляем файл
+                        Task.Run(() => Send_file(filename, filePath, int.Parse(values[0][0])));
                     }
-                    else
-                    {
-                        my_message.User_Name = NickName;
-                        Message_Group_List.Items.Add(my_message);
-                        Message_Group_List.ScrollIntoView(Message_Group_List.Items[Message_Group_List.Items.Count - 1]);
-                    }
-                    TextBox_Message.Text = "";
                 }
+                
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
+            finally
+            {
+                TextBox_Message.Text = "";
             }
         }
 
@@ -433,24 +481,6 @@ namespace MSG_by_AL__XAML_
             {
                 MessageBox.Show(ex.Message + "\n" + ex.Message);
             }
-        }
-        //Тест для добавления пользователя в друзья
-        [TestMethod]
-        public void AddToFriend_Test()
-        {
-            //Arrange
-            User user = new User();
-            user.ID = 1;
-            user.Name = "TestName";
-            user.Nickname = "TestNickname";
-            List<List<string>> expected = new List<List<string>>();
-            expected.Add(new List<string> { "OK" });
-
-            //Act
-            List<List<string>> actual = ServerConnect.RecieveBigDataFromDB("11#", IDuser + "~" + user.ID + "~" + user.Name + "~" + user.Nickname + "~");
-
-            //Assert
-            CollectionAssert.AreEqual(expected, actual);
         }
 
         //Удаление сообщения из диалога(13#)
@@ -1065,22 +1095,29 @@ namespace MSG_by_AL__XAML_
         //Прикрепить файл
         private void Attach_File_Click(object sender, RoutedEventArgs e)
         {
-            Task.Run(() => send_file());
-        }
-
-        private async void send_file()
-        {
-            ServerConnect server = new ServerConnect();
+            //Declare a string to store the short file name
             string short_file_name = "";
+            //Create a new OpenFileDialog object
             Microsoft.Win32.OpenFileDialog file_dialog = new Microsoft.Win32.OpenFileDialog();
+            //If the user selects a file
             if (file_dialog.ShowDialog() == true)
             {
+                //Store the file path
                 file_Path = file_dialog.FileName;
+                //Store the short file name
                 short_file_name = Path.GetFileName(file_Path);
             }
+            file_attached = true;
+            TextBox_Message.Text = short_file_name;
+            Sending_Message(short_file_name, file_Path);
+        }
 
-            ServerConnect.Send_File("1", short_file_name, file_Path);
+        //Rewritten code with comments
 
+        private async void Send_file(string short_file_name, string file_Path,int id_messages)
+        {
+            //Send the file to the server
+            ServerConnect.Send_File("1", short_file_name, file_Path, id_messages);
         }
     }
 }

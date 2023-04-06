@@ -35,6 +35,8 @@ namespace MSG_by_AL__XAML_.Resource
 
         public Visibility visibility { get; set; }
 
-        public GridLength height { get; set; }
+        //
+        public FontWeight Font_Bold { get; set; } = FontWeight.FromOpenTypeWeight(400);
+       
     }
 }

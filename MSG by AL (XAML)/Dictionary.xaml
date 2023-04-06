@@ -15,8 +15,16 @@
         <GradientStop Color="#FFFF8900" Offset="0"/>
         <GradientStop Color="#FFFFDC00" Offset="1"/>
     </LinearGradientBrush>
-    
-    
+
+    <!--Цвета сообщений файлов-->
+    <LinearGradientBrush x:Key="FileMessageColor" 
+                         EndPoint="0.5,1" 
+                         StartPoint="0.5,0">
+        <GradientStop Color="#FFA103E5" Offset="0"/>
+        <GradientStop Color="#FF430D4D" Offset="0.5"/>
+        <GradientStop Color="#FF6D056F" Offset="1"/>
+    </LinearGradientBrush>
+
 
     <!--Цвета заливки-->
     <LinearGradientBrush x:Key="BackgroundColor" 

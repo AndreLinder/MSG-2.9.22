@@ -201,7 +201,7 @@ namespace MSG_by_AL__XAML_
             return values;
         }
 
-        public static string Send_File(string number_command, string short_file_name, string file_name)
+        public static string Send_File(string number_command, string short_file_name, string file_name, int id_messages)
         {
             string message = "ERROR";
             
@@ -226,10 +226,13 @@ namespace MSG_by_AL__XAML_
                 {
                     BinaryWriter writer = new BinaryWriter(stream);
 
+                    writer.Write(number_command);
+                    
                     writer.Write(fileNameLength);
                     writer.Write(fileNameBytes);
                     writer.Write(fileLength);
                     stream.Write(fileBytes, 0, fileLength);
+                    writer.Write(id_messages);
                     writer.Flush();
                 }
 

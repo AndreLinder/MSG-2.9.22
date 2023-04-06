@@ -1112,13 +1112,14 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="78"></ColumnDefinition>
                                                 <ColumnDefinition Width="30"></ColumnDefinition>
+                                                <ColumnDefinition Width="15"></ColumnDefinition>
                                                 <ColumnDefinition ></ColumnDefinition>
                                             </Grid.ColumnDefinitions>
                                             <Grid.RowDefinitions>
                                                 <RowDefinition/>
-                                                <RowDefinition Height="{Binding height}"/>
+                                                <!--<RowDefinition Height="{Binding height}"/>-->
                                             </Grid.RowDefinitions>
-                                            <Border x:Name="file"
+                                            <!--<Border x:Name="file"
                                                     Grid.Column="2"
                                                     Grid.Row="1"
                                                     Background="{StaticResource BackgroundColor2}"
@@ -1147,26 +1148,27 @@
                                                         </Button.Content>
                                                     </Button>
                                                 </Grid>
-                                            </Border>
+                                            </Border>-->
                                             <Border CornerRadius="5" 
                                                     Background="{Binding backGround}" 
                                                     BorderBrush="{Binding borderBrush}" 
                                                     BorderThickness="0"
                                                     Height="Auto"
-                                                    Grid.Column="2"
+                                                    Grid.Column="3"
                                                     Grid.Row="0"
                                                     HorizontalAlignment="Right">
                                                 <TextBlock x:Name="Message" 
-                                               Text="{Binding Message_Text}" 
-                                               Background="Transparent"
-                                               Foreground="Black"
-                                               FontSize="14"
-                                               FontFamily="Palatino Linotype"
-                                               Width="Auto"
-                                               Height="Auto"
-                                               TextWrapping="Wrap"
-                                               MaxWidth="500"
-                                               Margin="2,2,2,2"/>
+                                                           Text="{Binding Message_Text}" 
+                                                           Background="Transparent"
+                                                           Foreground="Black"
+                                                           FontSize="14"
+                                                           FontFamily="Palatino Linotype"
+                                                           Width="Auto"
+                                                           Height="Auto"
+                                                           TextWrapping="Wrap"
+                                                           MaxWidth="500"
+                                                           Margin="2,2,2,2"
+                                                           FontWeight="{Binding Font_Bold}"/>
                                             </Border>
                                             <Button x:Name="DeleteMessage"
                                                     Style="{StaticResource ButtonStyleICO}"
@@ -1183,6 +1185,18 @@
                                                     HorizontalContentAlignment="Right"
                                                     VerticalAlignment="Center"
                                                     Margin="2,2,2,2"/>
+                                            <Button x:Name="Download_Or_Open"
+                                                            Grid.Column="2"
+                                                            HorizontalAlignment="Right"
+                                                            VerticalAlignment="Center"
+                                                            Background="Transparent"
+                                                            BorderThickness="0"
+                                                    Width="15"
+                                                    Height="15">
+                                                <Button.Content>
+                                                    <Image Source="{StaticResource password}"/>
+                                                </Button.Content>
+                                            </Button>
                                             <Label Content="{Binding Message_Date}"
                                                    FontSize="8"
                                                     FontFamily="Palatino Linotype"

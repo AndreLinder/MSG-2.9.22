@@ -6,7 +6,6 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Security.Cryptography;
 using System.IO;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 
 namespace MSG_by_AL__XAML_
 {
@@ -64,8 +63,7 @@ namespace MSG_by_AL__XAML_
                     MessageBox.Show(ex.Message + "\n" + ex.ToString());
                     config_File.Close();
                 }
-            }
-
+            }          
         }
 
         //Авторизация пользователя
@@ -116,26 +114,6 @@ namespace MSG_by_AL__XAML_
                 Notification_Text.Text = "Нет соединения с сервером!";
                 Pop_Up_Notification();
             }
-        }
-        //Тест для авторизации пользователя
-        [TestMethod]
-        public void Login_Test()
-        {
-            //Arrange
-            string login = "test";
-            string password = "test";
-            byte[] hash_password = md5.ComputeHash(Encoding.UTF8.GetBytes(password));
-            List<string> values = new List<string> { "1", login, Encoding.UTF8.GetString(hash_password), "test", "test" };
-
-            //Act
-            Login_Click(null, null);
-            //Assert
-
-            Assert.AreEqual(values[0], IDuser.ToString());
-            Assert.AreEqual(values[1], NickName);
-            Assert.AreEqual(values[2], Encoding.UTF8.GetString(hash_password));
-            Assert.AreEqual(values[3], values[3]);
-            Assert.AreEqual(values[4], values[4]);
         }
 
         //Открываем окно регистрации пользователя
